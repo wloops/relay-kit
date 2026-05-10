@@ -1,0 +1,55 @@
+{
+  "projectName": "",
+  "language": "zh",
+  "mode": "simple",
+  "handoffDir": "docs/agent-handoffs",
+  "openSpecDir": "openspec",
+  "sourceDirs": [
+    "src",
+    "apps",
+    "packages"
+  ],
+  "packageManager": "auto",
+  "devCommand": "",
+  "buildCommand": "",
+  "testCommand": "",
+  "defaultExecutor": "opencode",
+  "defaultAdvisor": "",
+  "maxDiffLines": 500,
+  "includeGitDiff": true,
+  "includeOpenSpec": false,
+  "includePackageScripts": true,
+  "runLayout": "runs-lanes",
+  "defaultLane": "main",
+  "excludePatterns": [
+    ".env",
+    ".env.*",
+    "node_modules/**",
+    "dist/**",
+    "build/**",
+    "coverage/**",
+    "*.lock",
+    "pnpm-lock.yaml",
+    "package-lock.json",
+    "yarn.lock"
+  ],
+  "skills": {
+    "install": {
+      "manager": true,
+      "claudeProject": true,
+      "codexProject": true,
+      "claudeUser": false,
+      "codexUser": false
+    },
+    "enabled": [
+      "advisor-planner",
+      "advisor-delegator",
+      "advisor-escalation",
+      "advisor-reviewer"
+    ],
+    "optional": [
+      "advisor-lane-planner",
+      "advisor-docs"
+    ]
+  }
+}
