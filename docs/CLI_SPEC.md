@@ -93,6 +93,8 @@ advisor sync --skills --target claude
 advisor sync --skills --target codex
 advisor sync --skills --target all --scope project
 advisor sync --skills --target all --scope user
+advisor sync --skills --dry-run
+advisor sync --skills --force
 ```
 
 默认从：
@@ -107,3 +109,13 @@ advisor sync --skills --target all --scope user
 .claude/skills/
 .agents/skills/
 ```
+
+规则：
+
+1. 默认只同步当前项目配置启用的项目级目标；
+2. 用户级目录只在显式传入 `--scope user` 时写入；
+3. Codex 目标使用 `.agents/skills` 或 `~/.agents/skills`，不使用 `.codex/skills`；
+4. 默认不覆盖疑似被用户修改过的目标 Skill；
+5. `--force` 允许覆盖冲突文件；
+6. `--dry-run` 只输出同步计划，不写入文件或同步状态；
+7. 命令输出同步报告，包含目标、文件动作和汇总结果。

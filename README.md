@@ -27,6 +27,7 @@ advisor ask
 advisor resume
 advisor review
 advisor doctor
+advisor sync --skills
 ```
 
 ### 安装与本地运行
@@ -73,6 +74,20 @@ AGENTS.md
 ~/.agents/skills
 ```
 
+后续更新 `.advisor-kit/skills` 后，可以同步到具体工具目录：
+
+```bash
+advisor sync --skills
+advisor sync --skills --target claude
+advisor sync --skills --target codex
+advisor sync --skills --target all --scope project
+advisor sync --skills --target all --scope user
+advisor sync --skills --dry-run
+advisor sync --skills --force
+```
+
+默认只同步到当前项目配置启用的项目级目录，不会写入用户级 Skills。Codex 目录使用 `.agents/skills`，不会使用 `.codex/skills`。如果目标 Skill 疑似被用户修改，sync 会跳过并报告冲突；确认要覆盖时再使用 `--force`。
+
 simple 模式任务流：
 
 ```bash
@@ -96,7 +111,7 @@ advisor review
 
 `advisor start` 只生成 `EXECUTOR_TASK.md`。`advisor ask` 默认只收集现有上下文；只有显式传入 `--run build` 或 `--run test` 时才执行项目脚本，并把命令、退出码和截断日志写入 `ASK_ADVISOR.md`。
 
-MVP 不会自动调用模型 API、不会自动执行 OpenCode / Claude Code / Codex、不会自动提交 git，也不会替代 `/opsx:apply`。当前 CLI 只提供上面 6 个命令。
+MVP 不会自动调用模型 API、不会自动执行 OpenCode / Claude Code / Codex、不会自动提交 git，也不会替代 `/opsx:apply`。
 
 ## MVP Skills
 
