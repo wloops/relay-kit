@@ -2,6 +2,11 @@
   "name": "ai-advisor-kit",
   "version": "0.1.0",
   "description": "Skills-first, CLI-assisted AI programming advisor workflow toolkit.",
+  "types": "./dist/cli.d.ts",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/wloops/ai-advisor-kit.git"
+  },
   "type": "module",
   "bin": {
     "advisor": "dist/cli.js"
@@ -23,6 +28,8 @@
   "scripts": {
     "dev": "tsx src/cli.ts",
     "build": "tsup",
+    "prepublishOnly": "pnpm build",
+    "typecheck": "tsc --noEmit",
     "test": "node --import tsx --test tests/*.test.ts"
   },
   "keywords": [
