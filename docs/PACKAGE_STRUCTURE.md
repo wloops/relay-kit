@@ -1,7 +1,7 @@
-# 推荐 npm 包结构
+﻿# 推荐 npm 包结构
 
 ```text
-ai-advisor-kit/
+relay-kit/
   package.json
   README.md
   tsconfig.json
@@ -34,7 +34,7 @@ ai-advisor-kit/
       runLane.ts
 
   templates/
-    AGENTS.advisor.md
+    AGENTS.relay.md
     EXECUTOR_TASK.template.md
     ASK_ADVISOR.template.md
     ADVISOR_DECISION.template.md
@@ -45,12 +45,12 @@ ai-advisor-kit/
     config.template.json
 
   skills/
-    advisor-planner/SKILL.md
-    advisor-delegator/SKILL.md
-    advisor-escalation/SKILL.md
-    advisor-reviewer/SKILL.md
-    advisor-lane-planner/SKILL.md
-    advisor-docs/SKILL.md
+    relay-planner/SKILL.md
+    relay-delegator/SKILL.md
+    relay-escalation/SKILL.md
+    relay-reviewer/SKILL.md
+    relay-lane-planner/SKILL.md
+    relay-docs/SKILL.md
 ```
 
 ## 项目接入后结构
@@ -59,28 +59,28 @@ ai-advisor-kit/
 your-project/
   AGENTS.md
 
-  .advisor-kit/
+  .relay/
     config.json
     state.json
     skills/
-      advisor-planner/SKILL.md
-      advisor-delegator/SKILL.md
-      advisor-escalation/SKILL.md
-      advisor-reviewer/SKILL.md
+      relay-planner/SKILL.md
+      relay-delegator/SKILL.md
+      relay-escalation/SKILL.md
+      relay-reviewer/SKILL.md
 
   .claude/
     skills/
-      advisor-planner/SKILL.md
-      advisor-delegator/SKILL.md
-      advisor-escalation/SKILL.md
-      advisor-reviewer/SKILL.md
+      relay-planner/SKILL.md
+      relay-delegator/SKILL.md
+      relay-escalation/SKILL.md
+      relay-reviewer/SKILL.md
 
   .agents/
     skills/
-      advisor-planner/SKILL.md
-      advisor-delegator/SKILL.md
-      advisor-escalation/SKILL.md
-      advisor-reviewer/SKILL.md
+      relay-planner/SKILL.md
+      relay-delegator/SKILL.md
+      relay-escalation/SKILL.md
+      relay-reviewer/SKILL.md
 
   docs/
     agent-handoffs/
@@ -90,7 +90,7 @@ your-project/
 说明：
 
 ```text
-.advisor-kit/skills = advisor-kit 管理副本
+.relay/skills = relay-kit 管理副本
 .claude/skills      = Claude Code 项目级实际识别目录
 .agents/skills      = Codex 项目级实际识别目录
 ```

@@ -1,17 +1,17 @@
-# OpenSpec 集成策略
+﻿# OpenSpec 集成策略
 
 ## 1. 基本原则
 
-`ai-advisor-kit` 不替代 OpenSpec。
+`relay-kit` 不替代 OpenSpec。
 
 ```text
 OpenSpec 管任务定义
-advisor-kit 管任务交接、求助、Review
+relay-kit 管任务交接、求助、Review
 ```
 
 ## 2. 没有 OpenSpec 时
 
-`advisor init` 提供选择：Simple 模式、OpenSpec 模式、引导初始化 OpenSpec。
+`relay init` 提供选择：Simple 模式、OpenSpec 模式、引导初始化 OpenSpec。
 
 默认不安装、不初始化。
 
@@ -34,7 +34,7 @@ openspec/
 }
 ```
 
-`advisor start` 会读取 proposal/design/tasks。
+`relay start` 会读取 proposal/design/tasks。
 
 ## 4. 和 /opsx:apply 的关系
 
@@ -42,9 +42,9 @@ openspec/
 
 ```text
 /opsx:apply = OpenSpec 原生执行
-advisor start = 生成给 Executor 的任务交接说明，不执行代码
-advisor ask = 卡住时整理求助包
-advisor review = 完成后整理 Review 请求
+relay start = 生成给 Executor 的任务交接说明，不执行代码
+relay ask = 卡住时整理求助包
+relay review = 完成后整理 Review 请求
 ```
 
 ## 5. Change 策略

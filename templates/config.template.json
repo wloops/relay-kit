@@ -45,14 +45,14 @@
       "codexUser": false
     },
     "enabled": [
-      "advisor-planner",
-      "advisor-delegator",
-      "advisor-escalation",
-      "advisor-reviewer"
+      "relay-planner",
+      "relay-delegator",
+      "relay-escalation",
+      "relay-reviewer"
     ],
     "optional": [
-      "advisor-lane-planner",
-      "advisor-docs"
+      "relay-lane-planner",
+      "relay-docs"
     ]
   }
 }

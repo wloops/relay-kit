@@ -14,7 +14,7 @@ import { runStart } from "../src/commands/start.js";
 
 const execFileAsync = promisify(execFile);
 
-async function tempProject(prefix = "advisor-project-"): Promise<string> {
+async function tempProject(prefix = "relay-project-"): Promise<string> {
   const root = await fs.mkdtemp(path.join(os.tmpdir(), prefix));
   await fs.writeFile(
     path.join(root, "package.json"),
@@ -33,12 +33,12 @@ async function git(root: string, args: string[]): Promise<void> {
 
 async function initGit(root: string): Promise<void> {
   await git(root, ["init"]);
-  await git(root, ["config", "user.email", "advisor@example.test"]);
-  await git(root, ["config", "user.name", "Advisor Test"]);
+  await git(root, ["config", "user.email", "relay@example.test"]);
+  await git(root, ["config", "user.name", "Relay Test"]);
 }
 
 async function updateConfig(root: string, patch: Record<string, unknown>): Promise<void> {
-  const configPath = path.join(root, ".advisor-kit", "config.json");
+  const configPath = path.join(root, ".relay", "config.json");
   const config = JSON.parse(await read(configPath)) as Record<string, unknown>;
   await fs.writeFile(configPath, `${JSON.stringify({ ...config, ...patch }, null, 2)}\n`, "utf8");
 }
@@ -47,8 +47,8 @@ test("init creates project config, state, handoff directory, AGENTS block and pr
   const root = await tempProject();
   await runInit(root, { mode: "simple" });
 
-  const config = JSON.parse(await read(path.join(root, ".advisor-kit", "config.json"))) as { mode: string; skills: { install: { claudeUser: boolean; codexUser: boolean } } };
-  const state = JSON.parse(await read(path.join(root, ".advisor-kit", "state.json"))) as { currentRun: string; currentLane: string; mode: string };
+  const config = JSON.parse(await read(path.join(root, ".relay", "config.json"))) as { mode: string; skills: { install: { claudeUser: boolean; codexUser: boolean } } };
+  const state = JSON.parse(await read(path.join(root, ".relay", "state.json"))) as { currentRun: string; currentLane: string; mode: string };
 
   assert.equal(config.mode, "simple");
   assert.equal(config.skills.install.claudeUser, false);
@@ -56,23 +56,23 @@ test("init creates project config, state, handoff directory, AGENTS block and pr
   assert.equal(state.currentRun, "");
   assert.equal(state.currentLane, "main");
   assert.equal(state.mode, "simple");
-  assert.match(await read(path.join(root, "AGENTS.md")), /advisor-kit:start/);
-  assert.match(await read(path.join(root, ".advisorignore")), /\.env\.\*/);
+  assert.match(await read(path.join(root, "AGENTS.md")), /relay-kit:start/);
+  assert.match(await read(path.join(root, ".relayignore")), /\.env\.\*/);
   assert.ok(await exists(path.join(root, "docs", "agent-handoffs", "runs")));
-  assert.ok(await exists(path.join(root, ".advisor-kit", "skills", "advisor-planner", "SKILL.md")));
-  assert.ok(await exists(path.join(root, ".claude", "skills", "advisor-delegator", "SKILL.md")));
-  assert.ok(await exists(path.join(root, ".agents", "skills", "advisor-reviewer", "SKILL.md")));
+  assert.ok(await exists(path.join(root, ".relay", "skills", "relay-planner", "SKILL.md")));
+  assert.ok(await exists(path.join(root, ".claude", "skills", "relay-delegator", "SKILL.md")));
+  assert.ok(await exists(path.join(root, ".agents", "skills", "relay-reviewer", "SKILL.md")));
 });
 
-test("init keeps an existing .advisorignore even with force", async () => {
+test("init keeps an existing .relayignore even with force", async () => {
   const root = await tempProject();
-  await fs.writeFile(path.join(root, ".advisorignore"), "custom-secrets/\n", "utf8");
+  await fs.writeFile(path.join(root, ".relayignore"), "custom-secrets/\n", "utf8");
 
   const first = await runInit(root, { mode: "simple" });
-  assert.match(first.summary, /\.advisorignore \(kept existing\)/);
+  assert.match(first.summary, /\.relayignore \(kept existing\)/);
   await runInit(root, { mode: "simple", force: true });
 
-  assert.equal(await read(path.join(root, ".advisorignore")), "custom-secrets/\n");
+  assert.equal(await read(path.join(root, ".relayignore")), "custom-secrets/\n");
 });
 
 test("init is idempotent for AGENTS injection and requires force for managed config", async () => {
@@ -81,7 +81,7 @@ test("init is idempotent for AGENTS injection and requires force for managed con
   await assert.rejects(() => runInit(root, { mode: "simple" }), /already initialized/);
   await runInit(root, { mode: "simple", force: true });
   const agents = await read(path.join(root, "AGENTS.md"));
-  assert.equal((agents.match(/advisor-kit:start/g) ?? []).length, 1);
+  assert.equal((agents.match(/relay-kit:start/g) ?? []).length, 1);
 });
 
 test("start, ask, resume, review and doctor produce the MVP handoff files", async () => {
@@ -105,12 +105,12 @@ test("start, ask, resume, review and doctor produce the MVP handoff files", asyn
   assert.match(await read(review.file), /REVIEW_REQUEST/);
 
   const doctor = await runDoctor(root);
-  assert.match(doctor, /advisor doctor/);
+  assert.match(doctor, /relay doctor/);
   assert.match(doctor, /package script: build/);
 });
 
 test("ask and review apply advisorignore, redaction and configured truncation", async () => {
-  const root = await tempProject("advisor-safety-");
+  const root = await tempProject("relay-safety-");
   await initGit(root);
   await runInit(root, { mode: "simple" });
   await runStart(root, { title: "Safety context", scope: "src/**" });
@@ -121,7 +121,7 @@ test("ask and review apply advisorignore, redaction and configured truncation", 
   await git(root, ["add", "-f", "debug.log"]);
   await git(root, ["commit", "-m", "baseline"]);
 
-  await fs.appendFile(path.join(root, ".advisorignore"), "secrets/\n", "utf8");
+  await fs.appendFile(path.join(root, ".relayignore"), "secrets/\n", "utf8");
   await fs.mkdir(path.join(root, "secrets"), { recursive: true });
   await fs.writeFile(path.join(root, "secrets", "data.txt"), "token=ignored-secret\n", "utf8");
   await fs.writeFile(path.join(root, ".env"), "OPENAI_API_KEY=env-secret\n", "utf8");
@@ -147,7 +147,7 @@ test("ask and review apply advisorignore, redaction and configured truncation", 
   const askContent = await read(ask.file);
 
   assert.match(askContent, /## Context Safety/);
-  assert.match(askContent, /default rules \+ \.advisorignore/);
+  assert.match(askContent, /default rules \+ \.relayignore/);
   assert.match(askContent, /API_KEY=\[REDACTED\]/);
   assert.match(askContent, /truncated 2 lines/);
   assert.doesNotMatch(askContent, /build-secret-123456|env-secret|log-secret|ignored-secret|debug\.log|secrets\/data\.txt|line3/);
@@ -161,7 +161,7 @@ test("ask and review apply advisorignore, redaction and configured truncation", 
 });
 
 test("openspec mode reads the selected change into executor handoff", async () => {
-  const root = await tempProject("advisor-openspec-");
+  const root = await tempProject("relay-openspec-");
   const changeDir = path.join(root, "openspec", "changes", "add-demo");
   await fs.mkdir(changeDir, { recursive: true });
   await fs.writeFile(path.join(changeDir, "proposal.md"), "Proposal body", "utf8");
@@ -210,7 +210,7 @@ test("resume supports --from and rejects empty or incomplete decisions", async (
   await runInit(root, { mode: "simple" });
   await runStart(root, { title: "Resume edge cases" });
 
-  const explicitDecision = path.join(root, "advisor-decision.md");
+  const explicitDecision = path.join(root, "decision.md");
   await fs.writeFile(explicitDecision, "# ADVISOR_DECISION\n\n## Prompt For Executor\nUse the explicit decision source.\n", "utf8");
   const resume = await runResume(root, { from: explicitDecision });
   assert.match(await read(resume.file), /explicit decision source/);
@@ -228,8 +228,8 @@ test("doctor reports warnings when config and state are missing", async () => {
   const root = await tempProject();
   const doctor = await runDoctor(root);
 
-  assert.match(doctor, /warn \.advisor-kit\/config\.json/);
-  assert.match(doctor, /warn \.advisor-kit\/state\.json/);
+  assert.match(doctor, /warn \.relay\/config\.json/);
+  assert.match(doctor, /warn \.relay\/state\.json/);
 });
 
 async function exists(filePath: string): Promise<boolean> {

@@ -18,7 +18,7 @@ interface ReviewOptions {
 export function registerReviewCommand(program: Command): void {
   program
     .command("review")
-    .description("Create an advisor review request for the current implementation.")
+    .description("Create a relay review request for the current implementation.")
     .option("--copy", "Copy generated content to clipboard.")
     .option("--force", "Overwrite REVIEW_REQUEST.md.")
     .action(async (options: ReviewOptions) => {
@@ -32,7 +32,7 @@ export async function runReview(root: string, options: ReviewOptions = {}): Prom
   const state = await loadState(root);
 
   if (!state.currentRun) {
-    throw new Error("No current run. Run advisor start first.");
+    throw new Error("No current run. Run relay start first.");
   }
 
   const run = getRunContext(root, config, state.currentRun, state.currentLane);

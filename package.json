@@ -1,15 +1,15 @@
 {
-  "name": "ai-advisor-kit",
-  "version": "0.1.0",
-  "description": "Skills-first, CLI-assisted AI programming advisor workflow toolkit.",
+  "name": "relay-kit",
+  "version": "0.2.0",
+  "description": "Skills-first, CLI-assisted AI programming relay workflow toolkit.",
   "types": "./dist/cli.d.ts",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/wloops/ai-advisor-kit.git"
+    "url": "git+https://github.com/wloops/relay-kit.git"
   },
   "type": "module",
   "bin": {
-    "advisor": "dist/cli.js"
+    "relay": "dist/cli.js"
   },
   "files": [
     "dist",
@@ -35,7 +35,7 @@
   "keywords": [
     "ai",
     "cli",
-    "advisor",
+    "relay",
     "workflow"
   ],
   "license": "MIT",

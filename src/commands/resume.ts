@@ -16,7 +16,7 @@ interface ResumeOptions {
 export function registerResumeCommand(program: Command): void {
   program
     .command("resume")
-    .description("Create a resume prompt from an advisor decision.")
+    .description("Create a resume prompt from a relay decision.")
     .option("--from <path>", "Read Advisor decision from a specific file.")
     .option("--copy", "Copy generated content to clipboard.")
     .option("--force", "Overwrite RESUME_PROMPT.md.")
@@ -31,7 +31,7 @@ export async function runResume(root: string, options: ResumeOptions = {}): Prom
   const state = await loadState(root);
 
   if (!state.currentRun) {
-    throw new Error("No current run. Run advisor start first.");
+    throw new Error("No current run. Run relay start first.");
   }
 
   const run = getRunContext(root, config, state.currentRun, state.currentLane);
@@ -39,13 +39,13 @@ export async function runResume(root: string, options: ResumeOptions = {}): Prom
   const decision = await readTextIfExists(sourcePath);
 
   if (!decision.trim()) {
-    throw new Error(`Advisor decision is missing or empty: ${path.relative(root, sourcePath)}`);
+    throw new Error(`Decision is missing or empty: ${path.relative(root, sourcePath)}`);
   }
 
   const prompt = extractPromptForExecutor(decision);
 
   if (!prompt.trim()) {
-    throw new Error("Advisor decision does not contain a non-empty 'Prompt For Executor' section.");
+    throw new Error("Decision does not contain a non-empty 'Prompt For Executor' section.");
   }
 
   const content = renderTemplate(await loadTemplate("RESUME_PROMPT.template.md"), {

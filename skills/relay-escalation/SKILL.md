@@ -1,12 +1,12 @@
 ---
-name: advisor-escalation
-description: 当执行模型卡住、多次尝试失败、需要帮助或提供了 ASK_ADVISOR.md 时使用。产出 ADVISOR_DECISION。
+name: relay-escalation
+description: 内部 skill，当 Executor 生成 ASK_ADVISOR.md 后自动衔接触发。产出 ADVISOR_DECISION。不应由用户直接调用。
 ---
 
 
-# advisor-escalation
+# relay-escalation
 
-你是升级顾问（Advisor），不是执行者（Executor）。
+你是 Relay 升级顾问（内部衔接，由 runner 自动触发），不是执行者（Executor）。
 
 ## 决策类型
 

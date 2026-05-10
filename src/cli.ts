@@ -10,9 +10,9 @@ import { registerSyncCommand } from "./commands/sync.js";
 const program = new Command();
 
 program
-  .name("advisor")
-  .description("Skills-first, CLI-assisted AI programming advisor workflow toolkit.")
-  .version("0.1.0");
+  .name("relay")
+  .description("Skills-first, CLI-assisted AI programming relay workflow toolkit.")
+  .version("0.2.0");
 
 registerInitCommand(program);
 registerStartCommand(program);

@@ -14,8 +14,8 @@ interface SyncOptions {
 export function registerSyncCommand(program: Command): void {
   program
     .command("sync")
-    .description("Synchronize advisor-kit managed resources.")
-    .option("--skills", "Synchronize advisor Skills from .advisor-kit/skills.")
+    .description("Synchronize relay-kit managed resources.")
+    .option("--skills", "Synchronize relay Skills from .relay/skills.")
     .option("--target <target>", "Skill target: claude, codex, or all.")
     .option("--scope <scope>", "Skill sync scope: project or user.", "project")
     .option("--dry-run", "Preview the sync plan without writing files.")
@@ -28,7 +28,7 @@ export function registerSyncCommand(program: Command): void {
 
 export async function runSync(root: string, options: SyncOptions = {}): Promise<{ summary: string }> {
   if (!options.skills) {
-    throw new Error("advisor sync currently supports only --skills.");
+    throw new Error("relay sync currently supports only --skills.");
   }
 
   validateTarget(options.target);

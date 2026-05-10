@@ -3,7 +3,7 @@
 ## 1. 第一次接入项目
 
 ```bash
-advisor init
+relay init
 ```
 
 如果没有 OpenSpec，会让用户选择：
@@ -17,7 +17,7 @@ advisor init
 初始化后生成：
 
 ```text
-.advisor-kit/
+.relay/
   config.json
   state.json
   skills/
@@ -34,7 +34,7 @@ AGENTS.md
 对聪明模型说：
 
 ```text
-用 advisor-planner 帮我规划「本地项目存储」功能。
+用 relay-planner 帮我规划「本地项目存储」功能。
 请判断是否需要 OpenSpec，明确目标、范围、非目标，并拆成 tasks。
 ```
 
@@ -52,13 +52,13 @@ openspec/changes/add-local-project-storage/
 对聪明模型说：
 
 ```text
-用 advisor-delegator 把当前 OpenSpec change 的第 1-2 项交给 OpenCode。
+用 relay-delegator 把当前 OpenSpec change 的第 1-2 项交给 OpenCode。
 ```
 
 Skill 底层调用或建议：
 
 ```bash
-advisor start
+relay start
 ```
 
 生成：
@@ -72,13 +72,13 @@ docs/agent-handoffs/runs/<run-id>/lanes/main/EXECUTOR_TASK.md
 ## 4. 小模型卡住
 
 ```bash
-advisor ask
+relay ask
 ```
 
 生成 `ASK_ADVISOR.md`，交给聪明模型：
 
 ```text
-用 advisor-escalation 分析这个 ASK_ADVISOR，输出 ADVISOR_DECISION。
+用 relay-escalation 分析这个 ASK_ADVISOR，输出 ADVISOR_DECISION。
 ```
 
 ## 5. 顾问给出决策后继续
@@ -86,7 +86,7 @@ advisor ask
 保存顾问回复为 `ADVISOR_DECISION.md`，运行：
 
 ```bash
-advisor resume
+relay resume
 ```
 
 生成 `RESUME_PROMPT.md`，交给 OpenCode 继续。
@@ -94,13 +94,13 @@ advisor resume
 ## 6. 完成后 Review
 
 ```bash
-advisor review
+relay review
 ```
 
 生成 `REVIEW_REQUEST.md`，交给聪明模型：
 
 ```text
-用 advisor-reviewer review 当前实现。
+用 relay-reviewer review 当前实现。
 不要直接改代码，先输出 REVIEW_REPORT。
 ```
 

@@ -2,7 +2,7 @@ import path from "node:path";
 import { DEFAULT_LANE } from "./constants.js";
 import { ensureDir, safeWriteFile } from "./fs.js";
 import { loadTemplate, renderTemplate } from "./templates.js";
-import type { AdvisorConfig, RunContext } from "./types.js";
+import type { RelayConfig, RunContext } from "./types.js";
 
 export function slugify(value: string): string {
   const slug = value
@@ -19,7 +19,7 @@ export function createRunId(title: string, date = new Date()): string {
   return `${day}-${slugify(title)}`;
 }
 
-export function getRunContext(root: string, config: AdvisorConfig, runId: string, lane = DEFAULT_LANE): RunContext {
+export function getRunContext(root: string, config: RelayConfig, runId: string, lane = DEFAULT_LANE): RunContext {
   const runDir = path.join(root, config.handoffDir, "runs", runId);
   return {
     runId,
@@ -31,7 +31,7 @@ export function getRunContext(root: string, config: AdvisorConfig, runId: string
 
 export async function createRunStructure(
   root: string,
-  config: AdvisorConfig,
+  config: RelayConfig,
   runId: string,
   lane = DEFAULT_LANE,
   options: { force?: boolean } = {},

@@ -8,9 +8,9 @@ import {
   EXCLUDED_GLOBS,
 } from "./constants.js";
 import { readJsonIfExists, writeJsonFile } from "./fs.js";
-import type { AdvisorConfig, AdvisorMode, ProjectInfo } from "./types.js";
+import type { RelayConfig, RelayMode, ProjectInfo } from "./types.js";
 
-export function createDefaultConfig(project: ProjectInfo, mode: AdvisorMode): AdvisorConfig {
+export function createDefaultConfig(project: ProjectInfo, mode: RelayMode): RelayConfig {
   return {
     projectName: project.name,
     language: "zh",
@@ -40,23 +40,23 @@ export function createDefaultConfig(project: ProjectInfo, mode: AdvisorMode): Ad
         claudeUser: false,
         codexUser: false,
       },
-      enabled: ["advisor-planner", "advisor-delegator", "advisor-escalation", "advisor-reviewer"],
-      optional: ["advisor-lane-planner", "advisor-docs"],
+      enabled: ["relay-planner", "relay-delegator", "relay-escalation", "relay-reviewer"],
+      optional: ["relay-lane-planner", "relay-docs"],
     },
   };
 }
 
-export async function loadConfig(root: string): Promise<AdvisorConfig> {
-  const config = await readJsonIfExists<AdvisorConfig>(path.join(root, CONFIG_FILE));
+export async function loadConfig(root: string): Promise<RelayConfig> {
+  const config = await readJsonIfExists<RelayConfig>(path.join(root, CONFIG_FILE));
 
   if (!config) {
-    throw new Error("Missing .advisor-kit/config.json. Run advisor init first.");
+    throw new Error("Missing .relay/config.json. Run relay init first.");
   }
 
   return normalizeConfig(config);
 }
 
-export async function writeConfig(root: string, config: AdvisorConfig): Promise<void> {
+export async function writeConfig(root: string, config: RelayConfig): Promise<void> {
   await writeJsonFile(path.join(root, CONFIG_FILE), config);
 }
 
@@ -65,7 +65,7 @@ function packageScript(packageManager: ProjectInfo["packageManager"], script: st
   return `${runner} run ${script}`;
 }
 
-function normalizeConfig(config: AdvisorConfig): AdvisorConfig {
+function normalizeConfig(config: RelayConfig): RelayConfig {
   return {
     ...config,
     maxDiffLines: config.maxDiffLines ?? DEFAULT_MAX_DIFF_LINES,

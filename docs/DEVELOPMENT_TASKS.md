@@ -1,4 +1,4 @@
-# 开发任务拆解
+﻿# 开发任务拆解
 
 ## Phase 1：项目骨架
 
@@ -6,8 +6,8 @@
 - [ ] TypeScript 配置
 - [ ] tsup 打包
 - [ ] commander/cac CLI
-- [ ] package.json bin: advisor
-- [ ] advisor --help
+- [ ] package.json bin: relay
+- [ ] relay --help
 - [ ] 命令占位：init/start/ask/resume/review/doctor
 
 ## Phase 2：init
@@ -17,10 +17,10 @@
 - [ ] 检测包管理器
 - [ ] 检测 OpenSpec
 - [ ] 交互选择 simple/openspec/with-openspec
-- [ ] 创建 .advisor-kit/config.json 和 state.json
+- [ ] 创建 .relay/config.json 和 state.json
 - [ ] 创建 docs/agent-handoffs/runs
 - [ ] 注入 AGENTS.md
-- [ ] 导出 skills 到 .advisor-kit/skills
+- [ ] 导出 skills 到 .relay/skills
 - [ ] 交互选择是否同步到 .claude/skills
 - [ ] 交互选择是否同步到 .agents/skills
 - [ ] 不默认安装用户级 skills
@@ -50,11 +50,11 @@
 
 ## Phase 10：skills sync
 
-- [ ] 实现 `advisor sync --skills`
+- [ ] 实现 `relay sync --skills`
 - [ ] 支持 `--target claude`
 - [ ] 支持 `--target codex`
 - [ ] 支持 `--target all`
 - [ ] 支持 `--scope project`
 - [ ] 支持 `--scope user`
-- [ ] 从 `.advisor-kit/skills` 同步到目标目录
+- [ ] 从 `.relay/skills` 同步到目标目录
 - [ ] 避免覆盖用户手动修改，覆盖前确认或备份

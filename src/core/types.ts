@@ -1,10 +1,11 @@
-export type AdvisorMode = "simple" | "openspec";
+export type RelayMode = "simple" | "openspec";
+export type AdvisorMode = RelayMode;
 export type PackageManager = "pnpm" | "npm" | "yarn" | "bun" | "unknown";
 
-export interface AdvisorConfig {
+export interface RelayConfig {
   projectName: string;
   language: string;
-  mode: AdvisorMode;
+  mode: RelayMode;
   handoffDir: string;
   openSpecDir: string;
   sourceDirs: string[];
@@ -35,13 +36,30 @@ export interface AdvisorConfig {
   };
 }
 
-export interface AdvisorState {
+export type AdvisorConfig = RelayConfig;
+
+export interface DirectFixEntry {
+  timestamp: string;
+  reason: "small_patch" | "executor_failure" | "architecture" | "user_request";
+  files: string[];
+  summary: string;
+}
+
+export interface RelayState {
   currentRun: string;
   currentLane: string;
-  mode: AdvisorMode;
+  mode: RelayMode;
   currentChange: string;
   updatedAt: string;
+  advisorMode: "review" | "direct_fix";
+  executorFailures: {
+    currentTask: number;
+    totalEscalations: number;
+  };
+  directFixLog: DirectFixEntry[];
 }
+
+export type AdvisorState = RelayState;
 
 export interface ProjectInfo {
   root: string;

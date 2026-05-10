@@ -20,7 +20,7 @@ interface AskOptions {
 export function registerAskCommand(program: Command): void {
   program
     .command("ask")
-    .description("Create an advisor escalation request when the executor is stuck.")
+    .description("Create a relay escalation request when the executor is stuck.")
     .option("--run <target>", "Explicitly run build or test before generating ASK_ADVISOR.md.")
     .option("--copy", "Copy generated content to clipboard.")
     .option("--force", "Overwrite ASK_ADVISOR.md.")
@@ -83,7 +83,7 @@ export async function runAsk(root: string, options: AskOptions = {}): Promise<{ 
 
 function requireCurrentRun(root: string, config: Awaited<ReturnType<typeof loadConfig>>, runId: string, lane: string) {
   if (!runId) {
-    throw new Error("No current run. Run advisor start first.");
+    throw new Error("No current run. Run relay start first.");
   }
 
   return getRunContext(root, config, runId, lane);

@@ -23,7 +23,7 @@ interface StartOptions {
 export function registerStartCommand(program: Command): void {
   program
     .command("start")
-    .description("Start an advisor handoff run and create an executor task.")
+    .description("Start a relay handoff run and create an executor task.")
     .option("--title <title>", "Simple mode task title.")
     .option("--scope <scope>", "Allowed implementation scope.")
     .option("--blocked-scope <scope>", "Scope that must not be changed.")

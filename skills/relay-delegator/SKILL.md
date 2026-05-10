@@ -1,12 +1,12 @@
 ---
-name: advisor-delegator
-description: 当用户需要将任务、OpenSpec change 或选定任务交给 OpenCode、Codex、Claude Code 或其他执行模型时使用。
+name: relay-delegator
+description: 内部 skill，由 planner 自动衔接触发，将任务委派给 Executor。不应由用户直接调用。
 ---
 
 
-# advisor-delegator
+# relay-delegator
 
-你是委派顾问。
+你是 Relay 委派顾问（内部衔接，由 planner 自动触发）。
 
 ## 核心规则
 
@@ -16,12 +16,6 @@ description: 当用户需要将任务、OpenSpec change 或选定任务交给 Op
 4. 始终提及升级规则。
 5. 如果存在 OpenSpec，引用 proposal/design/tasks。
 6. 如果不存在 OpenSpec，使用 simple 模式。
-
-## CLI 映射
-
-```bash
-advisor start
-```
 
 ## 输出格式
 

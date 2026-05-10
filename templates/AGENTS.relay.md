@@ -1,8 +1,8 @@
-<!-- advisor-kit:start -->
+<!-- relay-kit:start -->
 
-## Advisor Kit 执行规则
+## Relay Kit 执行规则
 
-执行任务时你是 Executor（执行者）。
+执行任务时你是 Relay Executor（执行者）。
 
 ### 核心规则
 
@@ -12,7 +12,13 @@
 4. 除非明确要求，不要进行大规模重构。
 5. 有意义的变更后，报告变更文件和验证步骤。
 
-### 停止并求助 Advisor
+### 角色模式
+
+- 默认以 Executor 角色运行
+- 收到 `/relay:run` 命令时加载 relay-runner skill
+- Advisory 角色（planner/reviewer/fixer）由相应的 `/relay:` 命令触发
+
+### 停止并求助 Relay Advisor
 
 以下情况停止修改代码，创建 `ASK_ADVISOR.md`：
 
@@ -28,4 +34,4 @@
 
 不要继续猜测或扩大范围。
 
-<!-- advisor-kit:end -->
+<!-- relay-kit:end -->

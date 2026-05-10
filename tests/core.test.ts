@@ -3,8 +3,9 @@ import fs from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import test from "node:test";
-import { loadAdvisorIgnoreMatcher, parseAdvisorIgnore } from "../src/core/advisorignore.js";
+import { loadRelayIgnoreMatcher, parseRelayIgnore } from "../src/core/relayignore.js";
 import { createDefaultConfig, loadConfig } from "../src/core/config.js";
+import { createDefaultState } from "../src/core/state.js";
 import { assertInsideRoot, isExcludedPath } from "../src/core/excludes.js";
 import { safeWriteFile, stripBom } from "../src/core/fs.js";
 import { redactSensitiveText } from "../src/core/redaction.js";
@@ -12,7 +13,7 @@ import { loadTemplate, renderTemplate } from "../src/core/templates.js";
 import type { AdvisorConfig, ProjectInfo } from "../src/core/types.js";
 
 async function tempDir(): Promise<string> {
-  return fs.mkdtemp(path.join(os.tmpdir(), "advisor-core-"));
+  return fs.mkdtemp(path.join(os.tmpdir(), "relay-core-"));
 }
 
 test("excludes sensitive files and build output paths", () => {
@@ -28,14 +29,14 @@ test("excludes sensitive files and build output paths", () => {
   assert.equal(isExcludedPath("coverage/report.json"), true);
 });
 
-test("advisorignore combines default rules with project rules without negating safety defaults", async () => {
+test("relayignore combines default rules with project rules without negating safety defaults", async () => {
   const root = await tempDir();
-  await fs.writeFile(path.join(root, ".advisorignore"), "# custom\nsecrets/\n*.tmp\n!*.pem\n", "utf8");
+  await fs.writeFile(path.join(root, ".relayignore"), "# custom\nsecrets/\n*.tmp\n!*.pem\n", "utf8");
 
-  const matcher = await loadAdvisorIgnoreMatcher(root, ["generated/"]);
+  const matcher = await loadRelayIgnoreMatcher(root, ["generated/"]);
 
-  assert.deepEqual(parseAdvisorIgnore("# comment\n\nlogs/\n!*.pem\n"), ["logs/"]);
-  assert.equal(matcher.hasAdvisorIgnore, true);
+  assert.deepEqual(parseRelayIgnore("# comment\n\nlogs/\n!*.pem\n"), ["logs/"]);
+  assert.equal(matcher.hasRelayIgnore, true);
   assert.equal(matcher.shouldIgnorePath("secrets/api.txt"), true);
   assert.equal(matcher.shouldIgnorePath("nested/cache.tmp"), true);
   assert.equal(matcher.shouldIgnorePath("generated/output.txt"), true);
@@ -76,8 +77,8 @@ test("loadConfig backfills maxLogLines for older config files", async () => {
   };
   const legacyConfig = createDefaultConfig(project, "simple") as Partial<AdvisorConfig>;
   delete legacyConfig.maxLogLines;
-  await fs.mkdir(path.join(root, ".advisor-kit"), { recursive: true });
-  await fs.writeFile(path.join(root, ".advisor-kit", "config.json"), JSON.stringify(legacyConfig, null, 2), "utf8");
+  await fs.mkdir(path.join(root, ".relay"), { recursive: true });
+  await fs.writeFile(path.join(root, ".relay", "config.json"), JSON.stringify(legacyConfig, null, 2), "utf8");
 
   const loaded = await loadConfig(root);
 
@@ -107,4 +108,13 @@ test("template renderer replaces known placeholders and reports missing template
 
 test("stripBom removes UTF-8 BOM before JSON parsing", () => {
   assert.deepEqual(JSON.parse(stripBom("\ufeff{\"ok\":true}")), { ok: true });
+});
+
+test("createDefaultState initializes new state-tracking fields", () => {
+  const state = createDefaultState("simple");
+
+  assert.equal(state.advisorMode, "review");
+  assert.deepEqual(state.executorFailures, { currentTask: 0, totalEscalations: 0 });
+  assert.deepEqual(state.directFixLog, []);
+  assert.ok(state.updatedAt);
 });

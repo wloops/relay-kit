@@ -1,106 +1,106 @@
-# CLI 规格
+﻿# CLI 规格
 
 ## 1. MVP 命令
 
 ```bash
-advisor init
-advisor start
-advisor ask
-advisor resume
-advisor review
-advisor doctor
+relay init
+relay start
+relay ask
+relay resume
+relay review
+relay doctor
 ```
 
-## 2. advisor init
+## 2. relay init
 
 初始化当前项目。
 
 ```bash
-advisor init
-advisor init --mode simple
-advisor init --mode openspec
-advisor init --with-openspec
-advisor init --yes
-advisor init --force
-advisor init --skills claude,codex
-advisor init --skills-manager-only
+relay init
+relay init --mode simple
+relay init --mode openspec
+relay init --with-openspec
+relay init --yes
+relay init --force
+relay init --skills claude,codex
+relay init --skills-manager-only
 ```
 
 行为：检测项目、检测 OpenSpec、选择模式、生成配置、创建 handoff 目录、注入 AGENTS.md、导出 Skills。
 
-## 3. advisor start
+## 3. relay start
 
 开始一个任务，生成 `EXECUTOR_TASK.md`。
 
 ```bash
-advisor start
-advisor start --change add-local-project-storage --tasks "1-2" --copy
-advisor start --title "优化人工确认页面 UI" --scope "src/pages/HumanConfirm.tsx,src/components/**" --copy
-advisor start --lane ui --tasks "3-4" --copy
+relay start
+relay start --change add-local-project-storage --tasks "1-2" --copy
+relay start --title "优化人工确认页面 UI" --scope "src/pages/HumanConfirm.tsx,src/components/**" --copy
+relay start --lane ui --tasks "3-4" --copy
 ```
 
 无参数时走交互式选择。
 
-## 4. advisor ask
+## 4. relay ask
 
 卡住时生成 `ASK_ADVISOR.md`。
 
 ```bash
-advisor ask
-advisor ask --run build
-advisor ask --lane ui --copy
-advisor ask --change add-local-project-storage --copy
+relay ask
+relay ask --run build
+relay ask --lane ui --copy
+relay ask --change add-local-project-storage --copy
 ```
 
 收集：git status、git diff、OpenSpec、构建/测试错误、当前 Executor task。
 
-## 5. advisor resume
+## 5. relay resume
 
 顾问回复后生成继续执行提示。
 
 ```bash
-advisor resume
-advisor resume --from clipboard
-advisor resume --lane ui --copy
+relay resume
+relay resume --from clipboard
+relay resume --lane ui --copy
 ```
 
 读取 `ADVISOR_DECISION.md`，输出 `RESUME_PROMPT.md`。
 
-## 6. advisor review
+## 6. relay review
 
 生成 Review 请求。
 
 ```bash
-advisor review
-advisor review --lane ui --copy
-advisor review --run current --copy
+relay review
+relay review --lane ui --copy
+relay review --run current --copy
 ```
 
 输出 `REVIEW_REQUEST.md`。
 
-## 7. advisor doctor
+## 7. relay doctor
 
 检查：config、AGENTS.md、skills、handoff 目录、OpenSpec、package scripts、current run/lane、未处理 ASK/DECISION。
 
 
-## 9. advisor sync --skills
+## 9. relay sync --skills
 
-同步 advisor Skills。
+同步 relay Skills。
 
 ```bash
-advisor sync --skills
-advisor sync --skills --target claude
-advisor sync --skills --target codex
-advisor sync --skills --target all --scope project
-advisor sync --skills --target all --scope user
-advisor sync --skills --dry-run
-advisor sync --skills --force
+relay sync --skills
+relay sync --skills --target claude
+relay sync --skills --target codex
+relay sync --skills --target all --scope project
+relay sync --skills --target all --scope user
+relay sync --skills --dry-run
+relay sync --skills --force
 ```
 
 默认从：
 
 ```text
-.advisor-kit/skills/
+.relay/skills/
 ```
 
 同步到项目级目标：

@@ -1,22 +1,22 @@
-import type { AdvisorConfig } from "./types.js";
-import { loadAdvisorIgnoreMatcher, type AdvisorIgnoreMatcher } from "./advisorignore.js";
+import type { RelayConfig } from "./types.js";
+import { loadRelayIgnoreMatcher, type RelayIgnoreMatcher } from "./relayignore.js";
 import { redactSensitiveText } from "./redaction.js";
 
 export interface ContextSafety {
-  ignore: AdvisorIgnoreMatcher;
+  ignore: RelayIgnoreMatcher;
   ignoreRulesStatus: string;
   redactionRulesStatus: string;
   shouldIgnorePath(candidate: string): boolean;
   redactText(value: string): string;
 }
 
-export async function createContextSafety(root: string, config: AdvisorConfig): Promise<ContextSafety> {
-  const ignore = await loadAdvisorIgnoreMatcher(root, config.excludePatterns);
+export async function createContextSafety(root: string, config: RelayConfig): Promise<ContextSafety> {
+  const ignore = await loadRelayIgnoreMatcher(root, config.excludePatterns);
 
   return {
     ignore,
-    ignoreRulesStatus: ignore.hasAdvisorIgnore
-      ? "applied: default rules + .advisorignore"
+    ignoreRulesStatus: ignore.hasRelayIgnore
+      ? "applied: default rules + .relayignore"
       : "applied: default rules only",
     redactionRulesStatus: "applied: basic sensitive value redaction",
     shouldIgnorePath(candidate: string): boolean {

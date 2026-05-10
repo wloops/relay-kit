@@ -1,8 +1,8 @@
 import path from "node:path";
-import { ADVISORIGNORE_FILE, EXCLUDED_GLOBS } from "./constants.js";
+import { RELAYIGNORE_FILE, EXCLUDED_GLOBS } from "./constants.js";
 import { pathExists, readTextIfExists, stripBom } from "./fs.js";
 
-export interface AdvisorIgnoreRule {
+export interface RelayIgnoreRule {
   pattern: string;
   raw: string;
   directory: boolean;
@@ -10,22 +10,22 @@ export interface AdvisorIgnoreRule {
   hasGlob: boolean;
 }
 
-export interface AdvisorIgnoreMatcher {
-  hasAdvisorIgnore: boolean;
+export interface RelayIgnoreMatcher {
+  hasRelayIgnore: boolean;
   patterns: string[];
   gitExcludePathspecs: string[];
   shouldIgnorePath(candidate: string): boolean;
 }
 
-export async function loadAdvisorIgnoreMatcher(root: string, extraPatterns: string[] = []): Promise<AdvisorIgnoreMatcher> {
-  const advisorIgnorePath = path.join(root, ADVISORIGNORE_FILE);
-  const hasAdvisorIgnore = await pathExists(advisorIgnorePath);
-  const advisorIgnorePatterns = hasAdvisorIgnore ? parseAdvisorIgnore(await readTextIfExists(advisorIgnorePath)) : [];
-  const patterns = uniquePatterns([...EXCLUDED_GLOBS, ...extraPatterns, ...advisorIgnorePatterns]);
-  const rules = patterns.map(parseRule).filter((rule): rule is AdvisorIgnoreRule => Boolean(rule));
+export async function loadRelayIgnoreMatcher(root: string, extraPatterns: string[] = []): Promise<RelayIgnoreMatcher> {
+  const relayIgnorePath = path.join(root, RELAYIGNORE_FILE);
+  const hasRelayIgnore = await pathExists(relayIgnorePath);
+  const relayIgnorePatterns = hasRelayIgnore ? parseRelayIgnore(await readTextIfExists(relayIgnorePath)) : [];
+  const patterns = uniquePatterns([...EXCLUDED_GLOBS, ...extraPatterns, ...relayIgnorePatterns]);
+  const rules = patterns.map(parseRule).filter((rule): rule is RelayIgnoreRule => Boolean(rule));
 
   return {
-    hasAdvisorIgnore,
+    hasRelayIgnore,
     patterns,
     gitExcludePathspecs: buildGitExcludePathspecs(rules),
     shouldIgnorePath(candidate: string): boolean {
@@ -35,7 +35,7 @@ export async function loadAdvisorIgnoreMatcher(root: string, extraPatterns: stri
   };
 }
 
-export function parseAdvisorIgnore(content: string): string[] {
+export function parseRelayIgnore(content: string): string[] {
   return stripBom(content)
     .split(/\r?\n/)
     .map((line) => line.trim())
@@ -47,7 +47,7 @@ export function normalizePath(value: string): string {
   return value.replace(/\\/g, "/").replace(/^\.\//, "").replace(/^\/+/, "");
 }
 
-function parseRule(rawPattern: string): AdvisorIgnoreRule | undefined {
+function parseRule(rawPattern: string): RelayIgnoreRule | undefined {
   const raw = rawPattern.trim();
 
   if (!raw || raw.startsWith("#") || raw.startsWith("!")) {
@@ -71,7 +71,7 @@ function parseRule(rawPattern: string): AdvisorIgnoreRule | undefined {
   };
 }
 
-function matchesRule(rule: AdvisorIgnoreRule, candidate: string): boolean {
+function matchesRule(rule: RelayIgnoreRule, candidate: string): boolean {
   const normalized = normalizePath(candidate);
   const parts = normalized.split("/").filter(Boolean);
 
@@ -107,7 +107,7 @@ function globToRegExp(pattern: string): RegExp {
   return new RegExp(`^${source}$`);
 }
 
-function buildGitExcludePathspecs(rules: AdvisorIgnoreRule[]): string[] {
+function buildGitExcludePathspecs(rules: RelayIgnoreRule[]): string[] {
   const pathspecs: string[] = [];
 
   for (const rule of rules) {
@@ -122,7 +122,7 @@ function buildGitExcludePathspecs(rules: AdvisorIgnoreRule[]): string[] {
   return [...new Set(pathspecs)];
 }
 
-function gitGlobForRule(rule: AdvisorIgnoreRule): string {
+function gitGlobForRule(rule: RelayIgnoreRule): string {
   if (rule.directory) {
     return `${rule.pattern}/**`;
   }

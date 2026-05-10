@@ -1,8 +1,8 @@
-# Roadmap
+﻿# Roadmap
 
 ## 0.1.0 MVP
 
-- advisor init/start/ask/resume/review/doctor
+- relay init/start/ask/resume/review/doctor
 - simple / openspec 模式
 - run / lane 目录结构
 - AGENTS.md 注入
@@ -15,12 +15,12 @@
 
 ## 0.2.0
 
-- advisor sync
-- advisor clean
+- relay sync
+- relay clean
 - history 归档
-- .advisorignore
+- .relayignore
 - secret redaction
-- advisor-lane-planner 初版
+- relay-lane-planner 初版
 
 ## 0.3.0
 
@@ -28,7 +28,7 @@
 - current change 选择和缓存
 - lane create / run create
 - worktree 辅助提示
-- advisor-docs
+- relay-docs
 
 ## 1.0.0
 

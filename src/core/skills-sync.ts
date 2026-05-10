@@ -2,9 +2,9 @@ import crypto from "node:crypto";
 import fs from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
-import { ADVISOR_DIR } from "./constants.js";
+import { RELAY_DIR } from "./constants.js";
 import { ensureDir, pathExists, readJsonIfExists, writeJsonFile } from "./fs.js";
-import type { AdvisorConfig } from "./types.js";
+import type { RelayConfig } from "./types.js";
 
 export type SkillSyncTool = "claude" | "codex";
 export type SkillSyncTargetOption = SkillSyncTool | "all";
@@ -72,11 +72,11 @@ export class SkillSyncConflictError extends Error {
   }
 }
 
-const MANIFEST_FILE = path.join(ADVISOR_DIR, "skills-sync.json");
+const MANIFEST_FILE = path.join(RELAY_DIR, "skills-sync.json");
 const ACTIONS: SkillSyncAction[] = ["create", "update", "unchanged", "conflict", "skip"];
 
-export async function syncSkills(root: string, config: AdvisorConfig, options: SkillSyncOptions = {}): Promise<SkillSyncReport> {
-  const sourceRoot = path.join(root, ADVISOR_DIR, "skills");
+export async function syncSkills(root: string, config: RelayConfig, options: SkillSyncOptions = {}): Promise<SkillSyncReport> {
+  const sourceRoot = path.join(root, RELAY_DIR, "skills");
   const scope = options.scope ?? "project";
   const targets = resolveSkillSyncTargets(root, config, { ...options, scope });
   const sources = await collectSkillSourceFiles(sourceRoot);
@@ -95,7 +95,7 @@ export async function syncSkills(root: string, config: AdvisorConfig, options: S
   return report;
 }
 
-export function resolveSkillSyncTargets(root: string, config: AdvisorConfig, options: SkillSyncOptions = {}): SkillSyncTarget[] {
+export function resolveSkillSyncTargets(root: string, config: RelayConfig, options: SkillSyncOptions = {}): SkillSyncTarget[] {
   const scope = options.scope ?? "project";
   const homeDir = options.homeDir ?? os.homedir();
   const tools = resolveTools(config, options.target, scope);
@@ -110,7 +110,7 @@ export function resolveSkillSyncTargets(root: string, config: AdvisorConfig, opt
 export function formatSkillSyncReport(report: SkillSyncReport): string {
   const targetLabels = report.targets.map((target) => pathLabel(target.root)).join(", ") || "(none)";
   const lines = [
-    "advisor sync --skills",
+    "relay sync --skills",
     `source: ${pathLabel(report.sourceRoot)}`,
     `scope: ${report.scope}`,
     `target: ${report.targetOption}`,
@@ -138,7 +138,7 @@ export function formatSkillSyncReport(report: SkillSyncReport): string {
   return lines.join("\n");
 }
 
-function resolveTools(config: AdvisorConfig, target: SkillSyncTargetOption | undefined, scope: SkillSyncScope): SkillSyncTool[] {
+function resolveTools(config: RelayConfig, target: SkillSyncTargetOption | undefined, scope: SkillSyncScope): SkillSyncTool[] {
   if (target) {
     if (target === "all") {
       return ["claude", "codex"];
@@ -176,14 +176,14 @@ function resolveTargetRoot(root: string, homeDir: string, tool: SkillSyncTool, s
 
 async function collectSkillSourceFiles(sourceRoot: string): Promise<SkillSourceFile[]> {
   if (!(await pathExists(sourceRoot))) {
-    throw new Error("Missing .advisor-kit/skills. Run advisor init first.");
+    throw new Error("Missing .relay/skills. Run relay init first.");
   }
 
   const entries = await fs.readdir(sourceRoot, { withFileTypes: true });
   const files: SkillSourceFile[] = [];
 
   for (const entry of entries) {
-    if (!entry.isDirectory() || !entry.name.startsWith("advisor-")) {
+    if (!entry.isDirectory() || !entry.name.startsWith("relay-")) {
       continue;
     }
 
@@ -196,7 +196,7 @@ async function collectSkillSourceFiles(sourceRoot: string): Promise<SkillSourceF
   }
 
   if (files.length === 0) {
-    throw new Error("No advisor skills found in .advisor-kit/skills.");
+    throw new Error("No relay skills found in .relay/skills.");
   }
 
   return files;

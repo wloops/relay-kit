@@ -11,7 +11,7 @@ import { loadState } from "../core/state.js";
 export function registerDoctorCommand(program: Command): void {
   program
     .command("doctor")
-    .description("Check advisor-kit project integration status.")
+    .description("Check relay-kit project integration status.")
     .action(async () => {
       console.log(await runDoctor(process.cwd()));
     });
@@ -23,34 +23,34 @@ export async function runDoctor(root: string): Promise<string> {
   const configExists = await pathExists(path.join(root, CONFIG_FILE));
   const stateExists = await pathExists(path.join(root, STATE_FILE));
 
-  checks.push(formatCheck(configExists, CONFIG_FILE, "Run advisor init."));
-  checks.push(formatCheck(stateExists, STATE_FILE, "Run advisor init."));
+  checks.push(formatCheck(configExists, CONFIG_FILE, "Run relay init."));
+  checks.push(formatCheck(stateExists, STATE_FILE, "Run relay init."));
 
   const agents = await readTextIfExists(path.join(root, "AGENTS.md"));
-  checks.push(formatCheck(agents.includes(AGENTS_START_MARKER), "AGENTS.md advisor-kit block", "Run advisor init --force."));
+  checks.push(formatCheck(agents.includes(AGENTS_START_MARKER), "AGENTS.md relay-kit block", "Run relay init --force."));
 
   if (configExists && stateExists) {
     const config = await loadConfig(root);
     const state = await loadState(root);
-    checks.push(formatCheck(await pathExists(path.join(root, config.handoffDir, "runs")), `${config.handoffDir}/runs`, "Run advisor init."));
+    checks.push(formatCheck(await pathExists(path.join(root, config.handoffDir, "runs")), `${config.handoffDir}/runs`, "Run relay init."));
 
-    for (const target of [".advisor-kit/skills", ".claude/skills", ".agents/skills"]) {
+    for (const target of [".relay/skills", ".claude/skills", ".agents/skills"]) {
       for (const skill of DEFAULT_SKILLS) {
-        checks.push(formatCheck(await pathExists(path.join(root, target, skill, "SKILL.md")), `${target}/${skill}`, "Run advisor init --force."));
+        checks.push(formatCheck(await pathExists(path.join(root, target, skill, "SKILL.md")), `${target}/${skill}`, "Run relay init --force."));
       }
     }
 
     if (state.currentRun) {
       const run = getRunContext(root, config, state.currentRun, state.currentLane);
-      checks.push(formatCheck(await pathExists(run.laneDir), `current lane ${path.relative(root, run.laneDir)}`, "Run advisor start."));
+      checks.push(formatCheck(await pathExists(run.laneDir), `current lane ${path.relative(root, run.laneDir)}`, "Run relay start."));
       checks.push(formatPending(!(await pathExists(path.join(run.laneDir, "ASK_ADVISOR.md"))), "ASK_ADVISOR.md", "Advisor response may be needed."));
-      checks.push(formatPending(!(await pathExists(path.join(run.laneDir, "ADVISOR_DECISION.md"))), "ADVISOR_DECISION.md", "Run advisor resume if ready."));
+      checks.push(formatPending(!(await pathExists(path.join(run.laneDir, "ADVISOR_DECISION.md"))), "ADVISOR_DECISION.md", "Run relay resume if ready."));
     }
   }
 
   checks.push(formatCheck(project.hasPackageJson, "package.json", "CLI works without it, but build/test detection will be limited."));
-  checks.push(formatCheck(project.packageScripts.build !== undefined, "package script: build", "Add a build script to enable advisor ask --run build."));
-  checks.push(formatCheck(project.packageScripts.test !== undefined, "package script: test", "Add a test script to enable advisor ask --run test."));
+  checks.push(formatCheck(project.packageScripts.build !== undefined, "package script: build", "Add a build script to enable relay ask --run build."));
+  checks.push(formatCheck(project.packageScripts.test !== undefined, "package script: test", "Add a test script to enable relay ask --run test."));
 
   if (project.hasOpenSpec) {
     const changes = await listOpenSpecChanges(root);
@@ -59,7 +59,7 @@ export async function runDoctor(root: string): Promise<string> {
     checks.push("warn OpenSpec: not detected; simple mode is supported.");
   }
 
-  return ["advisor doctor", ...checks].join("\n");
+  return ["relay doctor", ...checks].join("\n");
 }
 
 function formatCheck(ok: boolean, label: string, fix: string): string {

@@ -1,12 +1,12 @@
 ---
-name: advisor-planner
-description: 当用户需要规划功能、决定 simple vs OpenSpec 模式、创建 OpenSpec proposal/design/tasks、拆分工作任务或识别哪些任务可委派给执行模型时使用。
+name: relay-planner
+description: 当用户运行 /relay:plan 或需要规划功能、决定 simple vs OpenSpec 模式、创建 OpenSpec proposal/design/tasks、拆分工作任务或识别哪些任务可委派给执行模型时使用。
 ---
 
 
-# advisor-planner
+# relay-planner
 
-你是规划顾问（Advisor），不是执行者（Executor）。
+你是 Relay 规划顾问，不是执行者（Executor）。
 
 ## 适用场景
 

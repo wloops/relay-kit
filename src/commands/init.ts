@@ -2,11 +2,11 @@ import type { Command } from "commander";
 import fs from "node:fs/promises";
 import path from "node:path";
 import {
-  ADVISORIGNORE_FILE,
+  RELAYIGNORE_FILE,
   AGENTS_END_MARKER,
   AGENTS_START_MARKER,
   CONFIG_FILE,
-  DEFAULT_ADVISORIGNORE_CONTENT,
+  DEFAULT_RELAYIGNORE_CONTENT,
   DEFAULT_HANDOFF_DIR,
   STATE_FILE,
 } from "../core/constants.js";
@@ -16,10 +16,10 @@ import { detectProject } from "../core/project.js";
 import { createDefaultState, writeState } from "../core/state.js";
 import { loadTemplate } from "../core/templates.js";
 import { installProjectSkills } from "../core/skills.js";
-import type { AdvisorMode } from "../core/types.js";
+import type { RelayMode } from "../core/types.js";
 
 interface InitOptions {
-  mode?: AdvisorMode;
+  mode?: RelayMode;
   withOpenspec?: boolean;
   yes?: boolean;
   force?: boolean;
@@ -28,11 +28,11 @@ interface InitOptions {
 export function registerInitCommand(program: Command): void {
   program
     .command("init")
-    .description("Initialize advisor-kit in the current project.")
+    .description("Initialize relay-kit in the current project.")
     .option("--mode <mode>", "Initialization mode: simple or openspec.")
     .option("--with-openspec", "Show OpenSpec setup guidance without silently creating openspec/.")
     .option("--yes", "Accept non-destructive defaults.")
-    .option("--force", "Overwrite advisor-kit managed files.")
+    .option("--force", "Overwrite relay-kit managed files.")
     .action(async (options: InitOptions) => {
       const result = await runInit(process.cwd(), options);
       console.log(result.summary);
@@ -49,30 +49,30 @@ export async function runInit(root: string, options: InitOptions = {}): Promise<
 
   const config = createDefaultConfig(project, mode);
   const state = createDefaultState(mode);
-  await ensureDir(path.join(root, ".advisor-kit"));
+  await ensureDir(path.join(root, ".relay"));
 
   if (!options.force && ((await pathExists(path.join(root, CONFIG_FILE))) || (await pathExists(path.join(root, STATE_FILE))))) {
-    throw new Error("advisor-kit is already initialized. Use --force to rewrite managed config/state files.");
+    throw new Error("relay-kit is already initialized. Use --force to rewrite managed config/state files.");
   }
 
   await writeConfig(root, config);
   await writeState(root, state);
   await ensureDir(path.join(root, DEFAULT_HANDOFF_DIR, "runs"));
-  const advisorIgnoreStatus = await ensureAdvisorIgnore(root);
+  const relayIgnoreStatus = await ensureRelayIgnore(root);
   await injectAgentsRules(root, options.force);
   const skillTargets = await installProjectSkills(root, config, { force: options.force });
 
   const guidance =
     options.withOpenspec && !project.hasOpenSpec
-      ? "\nOpenSpec was requested, but advisor-kit did not create openspec/. Install/init OpenSpec explicitly, then rerun advisor init --mode openspec --force."
+      ? "\nOpenSpec was requested, but relay-kit did not create openspec/. Install/init OpenSpec explicitly, then rerun relay init --mode openspec --force."
       : "";
 
   return {
     summary: [
-      `advisor init complete (${mode}).`,
+      `relay init complete (${mode}).`,
       `Config: ${CONFIG_FILE}`,
       `State: ${STATE_FILE}`,
-      `Advisor ignore: ${advisorIgnoreStatus}`,
+      `Relay ignore: ${relayIgnoreStatus}`,
       `Skills: ${skillTargets.map((target) => path.relative(root, target)).join(", ")}`,
       guidance,
     ]
@@ -81,16 +81,16 @@ export async function runInit(root: string, options: InitOptions = {}): Promise<
   };
 }
 
-async function ensureAdvisorIgnore(root: string): Promise<string> {
-  if (await pathExists(path.join(root, ADVISORIGNORE_FILE))) {
-    return `${ADVISORIGNORE_FILE} (kept existing)`;
+async function ensureRelayIgnore(root: string): Promise<string> {
+  if (await pathExists(path.join(root, RELAYIGNORE_FILE))) {
+    return `${RELAYIGNORE_FILE} (kept existing)`;
   }
 
-  await safeWriteFile(root, ADVISORIGNORE_FILE, DEFAULT_ADVISORIGNORE_CONTENT);
-  return ADVISORIGNORE_FILE;
+  await safeWriteFile(root, RELAYIGNORE_FILE, DEFAULT_RELAYIGNORE_CONTENT);
+  return RELAYIGNORE_FILE;
 }
 
-function resolveMode(hasOpenSpec: boolean, requested?: AdvisorMode): AdvisorMode {
+function resolveMode(hasOpenSpec: boolean, requested?: RelayMode): RelayMode {
   if (requested && requested !== "simple" && requested !== "openspec") {
     throw new Error("--mode must be simple or openspec.");
   }
@@ -101,7 +101,7 @@ function resolveMode(hasOpenSpec: boolean, requested?: AdvisorMode): AdvisorMode
 async function injectAgentsRules(root: string, force = false): Promise<void> {
   const agentsPath = path.join(root, "AGENTS.md");
   const existing = await readTextIfExists(agentsPath);
-  const block = (await loadTemplate("AGENTS.advisor.md")).trim();
+  const block = (await loadTemplate("AGENTS.relay.md")).trim();
 
   if (existing.includes(AGENTS_START_MARKER) && existing.includes(AGENTS_END_MARKER)) {
     if (!force) {
