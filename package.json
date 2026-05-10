@@ -4,11 +4,18 @@
   "description": "Skills-first, CLI-assisted AI programming advisor workflow toolkit.",
   "type": "module",
   "bin": {
-    "advisor": "./dist/cli.js"
+    "advisor": "dist/cli.js"
   },
   "files": [
     "dist",
-    "docs",
+    "docs/CLI_SPEC.md",
+    "docs/FINAL_DESIGN.md",
+    "docs/OPENSPEC_INTEGRATION.md",
+    "docs/RUN_LANE_DESIGN.md",
+    "docs/SKILLS_INSTALLATION.md",
+    "docs/SMOKE_TESTS.md",
+    "docs/USAGE_FLOW.md",
+    "docs/V0_1_ALPHA_RELEASE.md",
     "skills",
     "templates",
     "README.md"
