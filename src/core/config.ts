@@ -1,5 +1,12 @@
 import path from "node:path";
-import { CONFIG_FILE, DEFAULT_HANDOFF_DIR, DEFAULT_LANE, EXCLUDED_GLOBS } from "./constants.js";
+import {
+  CONFIG_FILE,
+  DEFAULT_HANDOFF_DIR,
+  DEFAULT_LANE,
+  DEFAULT_MAX_DIFF_LINES,
+  DEFAULT_MAX_LOG_LINES,
+  EXCLUDED_GLOBS,
+} from "./constants.js";
 import { readJsonIfExists, writeJsonFile } from "./fs.js";
 import type { AdvisorConfig, AdvisorMode, ProjectInfo } from "./types.js";
 
@@ -17,7 +24,8 @@ export function createDefaultConfig(project: ProjectInfo, mode: AdvisorMode): Ad
     testCommand: project.packageScripts.test ? packageScript(project.packageManager, "test") : "",
     defaultExecutor: "opencode",
     defaultAdvisor: "",
-    maxDiffLines: 500,
+    maxDiffLines: DEFAULT_MAX_DIFF_LINES,
+    maxLogLines: DEFAULT_MAX_LOG_LINES,
     includeGitDiff: true,
     includeOpenSpec: mode === "openspec",
     includePackageScripts: true,
@@ -45,7 +53,7 @@ export async function loadConfig(root: string): Promise<AdvisorConfig> {
     throw new Error("Missing .advisor-kit/config.json. Run advisor init first.");
   }
 
-  return config;
+  return normalizeConfig(config);
 }
 
 export async function writeConfig(root: string, config: AdvisorConfig): Promise<void> {
@@ -55,4 +63,13 @@ export async function writeConfig(root: string, config: AdvisorConfig): Promise<
 function packageScript(packageManager: ProjectInfo["packageManager"], script: string): string {
   const runner = packageManager === "unknown" ? "npm" : packageManager;
   return `${runner} run ${script}`;
+}
+
+function normalizeConfig(config: AdvisorConfig): AdvisorConfig {
+  return {
+    ...config,
+    maxDiffLines: config.maxDiffLines ?? DEFAULT_MAX_DIFF_LINES,
+    maxLogLines: config.maxLogLines ?? DEFAULT_MAX_LOG_LINES,
+    excludePatterns: config.excludePatterns ?? EXCLUDED_GLOBS,
+  };
 }

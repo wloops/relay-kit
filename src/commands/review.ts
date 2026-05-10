@@ -2,6 +2,7 @@ import type { Command } from "commander";
 import path from "node:path";
 import { copyToClipboard } from "../core/clipboard.js";
 import { loadConfig } from "../core/config.js";
+import { createContextSafety } from "../core/context-safety.js";
 import { readTextIfExists, safeWriteFile } from "../core/fs.js";
 import { collectGitContext } from "../core/git.js";
 import { formatOpenSpecContext, readOpenSpecContext } from "../core/openspec.js";
@@ -35,17 +36,25 @@ export async function runReview(root: string, options: ReviewOptions = {}): Prom
   }
 
   const run = getRunContext(root, config, state.currentRun, state.currentLane);
-  const git = await collectGitContext(root, config.maxDiffLines);
-  const task = await readTextIfExists(path.join(run.laneDir, "EXECUTOR_TASK.md"));
+  const contextSafety = await createContextSafety(root, config);
+  const git = await collectGitContext(root, {
+    maxDiffLines: config.maxDiffLines,
+    gitExcludePathspecs: contextSafety.ignore.gitExcludePathspecs,
+    shouldIgnorePath: contextSafety.shouldIgnorePath,
+    redactText: contextSafety.redactText,
+  });
+  const task = contextSafety.redactText(await readTextIfExists(path.join(run.laneDir, "EXECUTOR_TASK.md")));
   const openSpecText =
     state.mode === "openspec" && state.currentChange
-      ? formatOpenSpecContext(await readOpenSpecContext(root, state.currentChange))
+      ? contextSafety.redactText(formatOpenSpecContext(await readOpenSpecContext(root, state.currentChange)))
       : "";
 
   const content = renderTemplate(await loadTemplate("REVIEW_REQUEST.template.md"), {
     projectName: config.projectName,
     runId: state.currentRun,
     lane: state.currentLane,
+    ignoreRulesStatus: contextSafety.ignoreRulesStatus,
+    redactionRulesStatus: contextSafety.redactionRulesStatus,
     gitDiffStat: git.diffStat || "(no diff)",
     gitDiff: [git.diff || "(no diff)", task ? `\n\n# Current Executor Task\n${task}` : "", openSpecText].filter(Boolean).join("\n"),
   });

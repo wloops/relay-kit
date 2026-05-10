@@ -16,6 +16,7 @@
   "defaultExecutor": "opencode",
   "defaultAdvisor": "",
   "maxDiffLines": 500,
+  "maxLogLines": 160,
   "includeGitDiff": true,
   "includeOpenSpec": false,
   "includePackageScripts": true,
@@ -24,10 +25,16 @@
   "excludePatterns": [
     ".env",
     ".env.*",
-    "node_modules/**",
-    "dist/**",
-    "build/**",
-    "coverage/**"
+    "node_modules/",
+    "dist/",
+    "build/",
+    "coverage/",
+    ".git/",
+    "*.pem",
+    "*.key",
+    "*.crt",
+    "*.p12",
+    "*.log"
   ],
   "skills": {
     "install": {

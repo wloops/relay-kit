@@ -1,7 +1,15 @@
 import type { Command } from "commander";
 import fs from "node:fs/promises";
 import path from "node:path";
-import { AGENTS_END_MARKER, AGENTS_START_MARKER, CONFIG_FILE, DEFAULT_HANDOFF_DIR, STATE_FILE } from "../core/constants.js";
+import {
+  ADVISORIGNORE_FILE,
+  AGENTS_END_MARKER,
+  AGENTS_START_MARKER,
+  CONFIG_FILE,
+  DEFAULT_ADVISORIGNORE_CONTENT,
+  DEFAULT_HANDOFF_DIR,
+  STATE_FILE,
+} from "../core/constants.js";
 import { createDefaultConfig, writeConfig } from "../core/config.js";
 import { ensureDir, pathExists, readTextIfExists, safeWriteFile } from "../core/fs.js";
 import { detectProject } from "../core/project.js";
@@ -50,6 +58,7 @@ export async function runInit(root: string, options: InitOptions = {}): Promise<
   await writeConfig(root, config);
   await writeState(root, state);
   await ensureDir(path.join(root, DEFAULT_HANDOFF_DIR, "runs"));
+  const advisorIgnoreStatus = await ensureAdvisorIgnore(root);
   await injectAgentsRules(root, options.force);
   const skillTargets = await installProjectSkills(root, config, { force: options.force });
 
@@ -63,12 +72,22 @@ export async function runInit(root: string, options: InitOptions = {}): Promise<
       `advisor init complete (${mode}).`,
       `Config: ${CONFIG_FILE}`,
       `State: ${STATE_FILE}`,
+      `Advisor ignore: ${advisorIgnoreStatus}`,
       `Skills: ${skillTargets.map((target) => path.relative(root, target)).join(", ")}`,
       guidance,
     ]
       .filter(Boolean)
       .join("\n"),
   };
+}
+
+async function ensureAdvisorIgnore(root: string): Promise<string> {
+  if (await pathExists(path.join(root, ADVISORIGNORE_FILE))) {
+    return `${ADVISORIGNORE_FILE} (kept existing)`;
+  }
+
+  await safeWriteFile(root, ADVISORIGNORE_FILE, DEFAULT_ADVISORIGNORE_CONTENT);
+  return ADVISORIGNORE_FILE;
 }
 
 function resolveMode(hasOpenSpec: boolean, requested?: AdvisorMode): AdvisorMode {

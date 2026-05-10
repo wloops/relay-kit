@@ -6,6 +6,10 @@
 - Lane: {{lane}}
 - Branch: {{branch}}
 
+## Context Safety
+- Ignore Rules: {{ignoreRulesStatus}}
+- Redaction Rules: {{redactionRulesStatus}}
+
 ## Current Task
 {{currentTask}}
 

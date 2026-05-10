@@ -10,7 +10,16 @@ export interface CommandResult {
   output: string;
 }
 
-export async function runShellCommand(root: string, command: string): Promise<CommandResult> {
+export interface RunShellCommandOptions {
+  maxLogLines: number;
+  redactText?: (value: string) => string;
+}
+
+export async function runShellCommand(
+  root: string,
+  command: string,
+  options: RunShellCommandOptions = { maxLogLines: 160 },
+): Promise<CommandResult> {
   try {
     const { stdout, stderr } = await execAsync(command, {
       cwd: root,
@@ -18,13 +27,18 @@ export async function runShellCommand(root: string, command: string): Promise<Co
       windowsHide: true,
     });
 
-    return { command, exitCode: 0, output: truncateLines(`${stdout}${stderr}`.trim(), 160) };
+    return { command, exitCode: 0, output: sanitizeCommandOutput(`${stdout}${stderr}`.trim(), options) };
   } catch (error) {
     const failed = error as { code?: number; stdout?: string; stderr?: string };
     return {
       command,
       exitCode: typeof failed.code === "number" ? failed.code : 1,
-      output: truncateLines(`${failed.stdout ?? ""}${failed.stderr ?? ""}`.trim(), 160),
+      output: sanitizeCommandOutput(`${failed.stdout ?? ""}${failed.stderr ?? ""}`.trim(), options),
     };
   }
+}
+
+function sanitizeCommandOutput(output: string, options: RunShellCommandOptions): string {
+  const redacted = options.redactText ? options.redactText(output) : output;
+  return truncateLines(redacted, options.maxLogLines);
 }

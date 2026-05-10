@@ -111,6 +111,38 @@ advisor review
 
 `advisor start` 只生成 `EXECUTOR_TASK.md`。`advisor ask` 默认只收集现有上下文；只有显式传入 `--run build` 或 `--run test` 时才执行项目脚本，并把命令、退出码和截断日志写入 `ASK_ADVISOR.md`。
 
+### 上下文安全
+
+`advisor init` 会在项目根目录生成默认 `.advisorignore`。`advisor ask` 和 `advisor review` 收集上下文时会同时应用默认忽略规则、`.advisorignore` 和基础脱敏规则，避免把环境变量、密钥文件、日志、构建产物或无关大目录写入 handoff 文档。
+
+默认忽略：
+
+```text
+.env
+.env.*
+node_modules/
+dist/
+build/
+coverage/
+.git/
+*.pem
+*.key
+*.crt
+*.p12
+*.log
+```
+
+`.advisorignore` 支持空行、`#` 注释、目录规则和基础 `*` 通配符。默认安全规则不可通过 `!` 反向取消。基础脱敏会处理常见 API key、token、secret、password、bearer token 和 private key block；它是防止常见泄露的保护层，不是完整安全扫描器。
+
+相关配置位于 `.advisor-kit/config.json`：
+
+```json
+{
+  "maxDiffLines": 500,
+  "maxLogLines": 160
+}
+```
+
 MVP 不会自动调用模型 API、不会自动执行 OpenCode / Claude Code / Codex、不会自动提交 git，也不会替代 `/opsx:apply`。
 
 ## MVP Skills

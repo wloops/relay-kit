@@ -1,14 +1,18 @@
 import assert from "node:assert/strict";
+import { execFile } from "node:child_process";
 import fs from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import test from "node:test";
+import { promisify } from "node:util";
 import { runAsk } from "../src/commands/ask.js";
 import { runDoctor } from "../src/commands/doctor.js";
 import { runInit } from "../src/commands/init.js";
 import { runResume } from "../src/commands/resume.js";
 import { runReview } from "../src/commands/review.js";
 import { runStart } from "../src/commands/start.js";
+
+const execFileAsync = promisify(execFile);
 
 async function tempProject(prefix = "advisor-project-"): Promise<string> {
   const root = await fs.mkdtemp(path.join(os.tmpdir(), prefix));
@@ -21,6 +25,22 @@ async function tempProject(prefix = "advisor-project-"): Promise<string> {
 
 async function read(filePath: string): Promise<string> {
   return fs.readFile(filePath, "utf8");
+}
+
+async function git(root: string, args: string[]): Promise<void> {
+  await execFileAsync("git", args, { cwd: root, windowsHide: true });
+}
+
+async function initGit(root: string): Promise<void> {
+  await git(root, ["init"]);
+  await git(root, ["config", "user.email", "advisor@example.test"]);
+  await git(root, ["config", "user.name", "Advisor Test"]);
+}
+
+async function updateConfig(root: string, patch: Record<string, unknown>): Promise<void> {
+  const configPath = path.join(root, ".advisor-kit", "config.json");
+  const config = JSON.parse(await read(configPath)) as Record<string, unknown>;
+  await fs.writeFile(configPath, `${JSON.stringify({ ...config, ...patch }, null, 2)}\n`, "utf8");
 }
 
 test("init creates project config, state, handoff directory, AGENTS block and project skills", async () => {
@@ -37,10 +57,22 @@ test("init creates project config, state, handoff directory, AGENTS block and pr
   assert.equal(state.currentLane, "main");
   assert.equal(state.mode, "simple");
   assert.match(await read(path.join(root, "AGENTS.md")), /advisor-kit:start/);
+  assert.match(await read(path.join(root, ".advisorignore")), /\.env\.\*/);
   assert.ok(await exists(path.join(root, "docs", "agent-handoffs", "runs")));
   assert.ok(await exists(path.join(root, ".advisor-kit", "skills", "advisor-planner", "SKILL.md")));
   assert.ok(await exists(path.join(root, ".claude", "skills", "advisor-delegator", "SKILL.md")));
   assert.ok(await exists(path.join(root, ".agents", "skills", "advisor-reviewer", "SKILL.md")));
+});
+
+test("init keeps an existing .advisorignore even with force", async () => {
+  const root = await tempProject();
+  await fs.writeFile(path.join(root, ".advisorignore"), "custom-secrets/\n", "utf8");
+
+  const first = await runInit(root, { mode: "simple" });
+  assert.match(first.summary, /\.advisorignore \(kept existing\)/);
+  await runInit(root, { mode: "simple", force: true });
+
+  assert.equal(await read(path.join(root, ".advisorignore")), "custom-secrets/\n");
 });
 
 test("init is idempotent for AGENTS injection and requires force for managed config", async () => {
@@ -75,6 +107,57 @@ test("start, ask, resume, review and doctor produce the MVP handoff files", asyn
   const doctor = await runDoctor(root);
   assert.match(doctor, /advisor doctor/);
   assert.match(doctor, /package script: build/);
+});
+
+test("ask and review apply advisorignore, redaction and configured truncation", async () => {
+  const root = await tempProject("advisor-safety-");
+  await initGit(root);
+  await runInit(root, { mode: "simple" });
+  await runStart(root, { title: "Safety context", scope: "src/**" });
+  await fs.mkdir(path.join(root, "src"), { recursive: true });
+  await fs.writeFile(path.join(root, "src", "index.ts"), "export const value = 'ok';\n", "utf8");
+  await fs.writeFile(path.join(root, "debug.log"), "baseline\n", "utf8");
+  await git(root, ["add", "src/index.ts"]);
+  await git(root, ["add", "-f", "debug.log"]);
+  await git(root, ["commit", "-m", "baseline"]);
+
+  await fs.appendFile(path.join(root, ".advisorignore"), "secrets/\n", "utf8");
+  await fs.mkdir(path.join(root, "secrets"), { recursive: true });
+  await fs.writeFile(path.join(root, "secrets", "data.txt"), "token=ignored-secret\n", "utf8");
+  await fs.writeFile(path.join(root, ".env"), "OPENAI_API_KEY=env-secret\n", "utf8");
+  await fs.writeFile(path.join(root, "debug.log"), "token=log-secret\n", "utf8");
+  await fs.writeFile(
+    path.join(root, "src", "index.ts"),
+    "export const token = 'src-secret-123456';\nexport const ok = true;\n",
+    "utf8",
+  );
+  await fs.writeFile(
+    path.join(root, "build-log.js"),
+    [
+      "console.log('line1');",
+      "console.log('API_KEY=build-secret-123456');",
+      "console.log('line3');",
+      "console.log('line4');",
+    ].join("\n"),
+    "utf8",
+  );
+  await updateConfig(root, { buildCommand: "node build-log.js", maxLogLines: 2, maxDiffLines: 8 });
+
+  const ask = await runAsk(root, { run: "build" });
+  const askContent = await read(ask.file);
+
+  assert.match(askContent, /## Context Safety/);
+  assert.match(askContent, /default rules \+ \.advisorignore/);
+  assert.match(askContent, /API_KEY=\[REDACTED\]/);
+  assert.match(askContent, /truncated 2 lines/);
+  assert.doesNotMatch(askContent, /build-secret-123456|env-secret|log-secret|ignored-secret|debug\.log|secrets\/data\.txt|line3/);
+
+  const review = await runReview(root);
+  const reviewContent = await read(review.file);
+
+  assert.match(reviewContent, /## Context Safety/);
+  assert.match(reviewContent, /token = '\[REDACTED\]'/);
+  assert.doesNotMatch(reviewContent, /src-secret-123456|env-secret|log-secret|ignored-secret|debug\.log|secrets\/data\.txt/);
 });
 
 test("openspec mode reads the selected change into executor handoff", async () => {

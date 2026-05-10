@@ -14,6 +14,10 @@ export function isExcludedPath(candidate: string): boolean {
     return true;
   }
 
+  if (/\.(pem|key|crt|p12|log)$/i.test(basename)) {
+    return true;
+  }
+
   return parts.some((part) => EXCLUDED_NAMES.has(part));
 }
 

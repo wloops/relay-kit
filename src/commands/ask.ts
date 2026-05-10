@@ -3,6 +3,7 @@ import path from "node:path";
 import { copyToClipboard } from "../core/clipboard.js";
 import { runShellCommand } from "../core/command-runner.js";
 import { loadConfig } from "../core/config.js";
+import { createContextSafety } from "../core/context-safety.js";
 import { safeWriteFile, readTextIfExists } from "../core/fs.js";
 import { collectGitContext } from "../core/git.js";
 import { formatOpenSpecContext, readOpenSpecContext } from "../core/openspec.js";
@@ -37,23 +38,31 @@ export async function runAsk(root: string, options: AskOptions = {}): Promise<{ 
   const config = await loadConfig(root);
   const state = await loadState(root);
   const run = requireCurrentRun(root, config, state.currentRun, state.currentLane);
-  const git = await collectGitContext(root, config.maxDiffLines);
-  const currentTask = await readTextIfExists(path.join(run.laneDir, "EXECUTOR_TASK.md"));
+  const contextSafety = await createContextSafety(root, config);
+  const git = await collectGitContext(root, {
+    maxDiffLines: config.maxDiffLines,
+    gitExcludePathspecs: contextSafety.ignore.gitExcludePathspecs,
+    shouldIgnorePath: contextSafety.shouldIgnorePath,
+    redactText: contextSafety.redactText,
+  });
+  const currentTask = contextSafety.redactText(await readTextIfExists(path.join(run.laneDir, "EXECUTOR_TASK.md")));
   const commandResult = await maybeRunCommand(root, config, options.run);
   const openSpecText =
     state.mode === "openspec" && state.currentChange
-      ? formatOpenSpecContext(await readOpenSpecContext(root, state.currentChange))
+      ? contextSafety.redactText(formatOpenSpecContext(await readOpenSpecContext(root, state.currentChange)))
       : "";
 
-  const errorLog = commandResult
+  const errorLog = contextSafety.redactText(commandResult
     ? [`Command: ${commandResult.command}`, `Exit Code: ${commandResult.exitCode}`, commandResult.output].join("\n")
-    : "No build/test command was run. Pass --run build or --run test to include command output.";
+    : "No build/test command was run. Pass --run build or --run test to include command output.");
 
   const content = renderTemplate(await loadTemplate("ASK_ADVISOR.template.md"), {
     projectName: config.projectName,
     runId: state.currentRun,
     lane: state.currentLane,
     branch: git.branch,
+    ignoreRulesStatus: contextSafety.ignoreRulesStatus,
+    redactionRulesStatus: contextSafety.redactionRulesStatus,
     currentTask: [currentTask || "(missing EXECUTOR_TASK.md)", openSpecText].filter(Boolean).join("\n\n"),
     errorLog,
     gitStatus: git.status || "(clean)",
@@ -95,5 +104,9 @@ async function maybeRunCommand(
     throw new Error(`No ${target} command configured or detected.`);
   }
 
-  return runShellCommand(root, command);
+  const contextSafety = await createContextSafety(root, config);
+  return runShellCommand(root, command, {
+    maxLogLines: config.maxLogLines,
+    redactText: contextSafety.redactText,
+  });
 }

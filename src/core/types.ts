@@ -15,6 +15,7 @@ export interface AdvisorConfig {
   defaultExecutor: string;
   defaultAdvisor: string;
   maxDiffLines: number;
+  maxLogLines: number;
   includeGitDiff: boolean;
   includeOpenSpec: boolean;
   includePackageScripts: boolean;

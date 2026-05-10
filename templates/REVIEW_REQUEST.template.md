@@ -5,6 +5,10 @@
 - Run: {{runId}}
 - Lane: {{lane}}
 
+## Context Safety
+- Ignore Rules: {{ignoreRulesStatus}}
+- Redaction Rules: {{redactionRulesStatus}}
+
 ## Git Diff Summary
 ```text
 {{gitDiffStat}}
