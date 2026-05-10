@@ -1,0 +1,40 @@
+{
+  "name": "ai-advisor-kit",
+  "version": "0.1.0",
+  "description": "Skills-first, CLI-assisted AI programming advisor workflow toolkit.",
+  "type": "module",
+  "bin": {
+    "advisor": "./dist/cli.js"
+  },
+  "files": [
+    "dist",
+    "docs",
+    "skills",
+    "templates",
+    "README.md"
+  ],
+  "scripts": {
+    "dev": "tsx src/cli.ts",
+    "build": "tsup"
+  },
+  "keywords": [
+    "ai",
+    "cli",
+    "advisor",
+    "workflow"
+  ],
+  "license": "MIT",
+  "dependencies": {
+    "commander": "^12.1.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.2",
+    "tsup": "^8.3.5",
+    "tsx": "^4.19.2",
+    "typescript": "^5.6.3"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "packageManager": "pnpm@9.15.0"
+}
