@@ -15,7 +15,8 @@
   ],
   "scripts": {
     "dev": "tsx src/cli.ts",
-    "build": "tsup"
+    "build": "tsup",
+    "test": "node --import tsx --test tests/*.test.ts"
   },
   "keywords": [
     "ai",

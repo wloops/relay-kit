@@ -27,11 +27,7 @@
     "node_modules/**",
     "dist/**",
     "build/**",
-    "coverage/**",
-    "*.lock",
-    "pnpm-lock.yaml",
-    "package-lock.json",
-    "yarn.lock"
+    "coverage/**"
   ],
   "skills": {
     "install": {

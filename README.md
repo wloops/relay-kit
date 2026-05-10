@@ -29,6 +29,75 @@ advisor review
 advisor doctor
 ```
 
+### 安装与本地运行
+
+```bash
+pnpm install
+pnpm build
+pnpm dev -- --help
+```
+
+打包后 CLI 入口是：
+
+```bash
+advisor --help
+```
+
+### 最小使用流程
+
+在目标项目中初始化 advisor-kit：
+
+```bash
+advisor init
+advisor init --mode simple
+advisor init --mode openspec
+advisor init --with-openspec
+```
+
+`advisor init` 会写入项目级配置和 Skills：
+
+```text
+.advisor-kit/config.json
+.advisor-kit/state.json
+.advisor-kit/skills
+.claude/skills
+.agents/skills
+docs/agent-handoffs/runs
+AGENTS.md
+```
+
+默认不会写入用户级目录：
+
+```text
+~/.claude/skills
+~/.agents/skills
+```
+
+simple 模式任务流：
+
+```bash
+advisor start --title "实现登录错误提示" --scope "src/**" --blocked-scope "不要修改数据库 schema"
+advisor ask
+advisor ask --run build
+advisor ask --run test
+advisor resume
+advisor review
+advisor doctor
+```
+
+OpenSpec 模式任务流：
+
+```bash
+advisor init --mode openspec
+advisor start --change add-example-feature --title "执行 add-example-feature"
+advisor ask
+advisor review
+```
+
+`advisor start` 只生成 `EXECUTOR_TASK.md`。`advisor ask` 默认只收集现有上下文；只有显式传入 `--run build` 或 `--run test` 时才执行项目脚本，并把命令、退出码和截断日志写入 `ASK_ADVISOR.md`。
+
+MVP 不会自动调用模型 API、不会自动执行 OpenCode / Claude Code / Codex、不会自动提交 git，也不会替代 `/opsx:apply`。当前 CLI 只提供上面 6 个命令。
+
 ## MVP Skills
 
 ```text
