@@ -31,7 +31,7 @@
 ```
 
 ## Questions For Advisor
-1. Should we continue?
-2. Is patch enough?
-3. Minimal fix?
-4. Prompt for Executor?
+1. 是否继续执行？
+2. 最小修补足够吗？
+3. 最小修复方案？
+4. 给 Executor 的提示？

@@ -8,7 +8,7 @@
 - Change: {{change}}
 
 ## Role
-You are the Executor.
+你是执行者（Executor）。
 
 ## Task
 {{taskTitle}}
@@ -20,4 +20,4 @@ You are the Executor.
 {{blockedScope}}
 
 ## Escalation Rule
-If the same issue fails after 2 attempts, stop and generate ASK_ADVISOR.md.
+同一问题尝试 2 次后仍失败，停止并生成 ASK_ADVISOR.md。

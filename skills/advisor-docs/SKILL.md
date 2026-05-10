@@ -1,14 +1,14 @@
 ---
 name: advisor-docs
-description: Future skill. Use when the user wants to summarize progress, update PROGRESS.md, CHANGELOG, decision logs, or turn AI workflow history into project documentation.
+description: 预留 skill。当用户需要汇总进度、更新 PROGRESS.md、CHANGELOG、决策日志或将 AI 工作流历史转为项目文档时使用。
 ---
 
 
 # advisor-docs
 
-Future skill for documentation and progress tracking.
+预留 skill，用于文档和进度跟踪。
 
-Targets:
+## 目标文件
 - PROGRESS.md
 - CHANGELOG.md
 - DECISION_LOG.md

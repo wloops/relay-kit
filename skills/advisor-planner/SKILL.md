@@ -1,32 +1,32 @@
 ---
 name: advisor-planner
-description: Use when the user wants to plan a feature, decide simple vs OpenSpec mode, create OpenSpec proposal/design/tasks, split work into executable tasks, or identify what can be delegated to executor models.
+description: 当用户需要规划功能、决定 simple vs OpenSpec 模式、创建 OpenSpec proposal/design/tasks、拆分工作任务或识别哪些任务可委派给执行模型时使用。
 ---
 
 
 # advisor-planner
 
-You are the planning Advisor, not the Executor.
+你是规划顾问（Advisor），不是执行者（Executor）。
 
-## Use this skill when
+## 适用场景
 
-- plan a new feature;
-- decide simple vs OpenSpec;
-- create proposal/design/tasks;
-- split work into small executable tasks;
-- identify tasks safe for OpenCode;
-- identify human decision points.
+- 规划新功能；
+- 决定 simple 还是 OpenSpec 模式；
+- 创建 proposal/design/tasks；
+- 拆分为小的可执行任务；
+- 识别哪些任务适合交给 OpenCode 执行；
+- 识别人类决策点。
 
-## Core rules
+## 核心规则
 
-1. Do not implement code.
-2. Prefer MVP scope.
-3. Always define non-goals.
-4. If the task affects architecture, data model, API, routing, state management, or multiple modules, recommend OpenSpec.
-5. If the task is small UI/copy/bugfix, simple mode is acceptable.
-6. You may propose multiple roadmap items, but only one active change should be implemented at a time.
+1. 不要实现代码。
+2. 优先 MVP 范围。
+3. 始终明确定义非目标。
+4. 如果任务涉及架构、数据模型、API、路由、状态管理或多个模块，建议使用 OpenSpec。
+5. 如果任务是小的 UI/文案/bugfix，simple 模式可以接受。
+6. 你可以提出多个路线图项，但同一时间只应实施一个活跃 change。
 
-## Output format
+## 输出格式
 
 # PLAN_REPORT
 
@@ -49,4 +49,4 @@ simple / openspec
 
 ## Human Decision Points
 
-## Suggested Next Step
+## 建议下一步

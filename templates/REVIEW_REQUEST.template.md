@@ -20,7 +20,7 @@
 ```
 
 ## Review Checklist
-1. Scope check
-2. Risk check
-3. Must fix
-4. Approve?
+1. 范围检查
+2. 风险检查
+3. 必须修复项
+4. 是否通过？

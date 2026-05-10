@@ -1,31 +1,31 @@
 <!-- advisor-kit:start -->
 
-## Advisor Kit Execution Rules
+## Advisor Kit 执行规则
 
-You are the Executor when implementing tasks.
+执行任务时你是 Executor（执行者）。
 
-### Core Rules
+### 核心规则
 
-1. Work in small steps.
-2. Do not expand scope beyond the current task.
-3. Do not introduce new dependencies without approval.
-4. Do not perform large refactors unless explicitly requested.
-5. After meaningful changes, report changed files and verification steps.
+1. 小步执行。
+2. 不要超出当前任务范围。
+3. 未经批准不要引入新依赖。
+4. 除非明确要求，不要进行大规模重构。
+5. 有意义的变更后，报告变更文件和验证步骤。
 
-### Stop And Ask Advisor
+### 停止并求助 Advisor
 
-Stop modifying code and create `ASK_ADVISOR.md` when:
+以下情况停止修改代码，创建 `ASK_ADVISOR.md`：
 
-1. The same issue fails after 2 attempts.
-2. The fix requires architecture, routing, state management, database, or data model changes.
-3. A new dependency seems necessary.
-4. More than 5 files need to change.
-5. Build/test errors involve multiple modules.
-6. The task conflicts with OpenSpec or EXECUTOR_TASK.md.
-7. You are unsure which files should be modified.
-8. UI judgment requires screenshot comparison.
-9. There is risk of data loss, security issue, or breaking existing behavior.
+1. 同一问题尝试 2 次后仍失败。
+2. 修复涉及架构、路由、状态管理、数据库或数据模型变更。
+3. 看起来需要新依赖。
+4. 需要修改超过 5 个文件。
+5. 构建/测试错误涉及多个模块。
+6. 任务与 OpenSpec 或 EXECUTOR_TASK.md 冲突。
+7. 不确定应该修改哪些文件。
+8. UI 判断需要截图对比。
+9. 存在数据丢失、安全问题或破坏现有行为的风险。
 
-Do not continue guessing or expand the scope.
+不要继续猜测或扩大范围。
 
 <!-- advisor-kit:end -->

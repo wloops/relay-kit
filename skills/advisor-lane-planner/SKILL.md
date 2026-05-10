@@ -1,14 +1,14 @@
 ---
 name: advisor-lane-planner
-description: Future skill. Use when the user wants to split a change into parallel execution lanes with non-overlapping file scopes.
+description: 预留 skill。当用户需要将 change 拆分为不重叠文件范围的并行执行 lane 时使用。
 ---
 
 
 # advisor-lane-planner
 
-Future skill for parallel execution planning.
+预留 skill，用于并行执行规划。
 
-## Output
+## 输出
 
 # TASK_BOARD
 
