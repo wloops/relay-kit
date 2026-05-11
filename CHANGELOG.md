@@ -1,6 +1,32 @@
 # Changelog
 
-## 0.2.0 (2026-05-10)
+## 0.3.0 (2026-05-11)
+
+### Added
+
+- **吸收 OpenSpec CLI 为内置实现**：`relay openspec` 子命令组，不再依赖外部 `openspec` 二进制
+  - `relay openspec new-change <name>` — 创建 change 目录
+  - `relay openspec status --change <name>` — 查看 artifact 完成状态
+  - `relay openspec list` — 列出活跃 changes
+  - `relay openspec instructions <artifact> --change <name>` — 获取 artifact 创建指引
+  - `relay openspec apply-instructions --change <name>` — 获取 apply 执行指引
+  - `relay openspec archive <name>` — 归档已完成的 change
+  - `relay openspec schemas` — 列出可用 schema
+- `relay sync --openspec` — 同步 OpenSpec 命令/Skill 文件到项目
+- `relay sync --all` — 一键同步 relay skills + OpenSpec 文件
+
+### Changed
+
+- `relay init` 交互式选择模式（检测到无 `openspec/` 时弹出菜单）
+- `relay init --mode openspec` 自动创建 `openspec/` 目录结构（不再报错）
+- `relay init` 检测外部 `openspec` CLI 并提供选项（使用内置 / 使用外部 / 跳过）
+- `relay sync` 现在需要显式指定 `--skills`、`--openspec` 或 `--all`
+- 增强 `relay-planner`、`relay-runner`、`relay-delegator` 的 OpenSpec 集成指引
+
+### Migration
+
+1. 如已安装外部 `openspec` CLI：`relay init --openspec-sync use_relay` 切换到内置实现
+2. 运行 `relay sync --all` 更新项目中的 OpenSpec 文件
 
 ### BREAKING CHANGE
 
