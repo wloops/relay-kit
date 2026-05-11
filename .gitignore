@@ -7,3 +7,9 @@ coverage/
 
 *.log
 .DS_Store
+
+.relay/
+.relayignore
+AGENTS.md
+.claude/skills/relay-*/
+.agents/skills/relay-*/
