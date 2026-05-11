@@ -73,12 +73,14 @@ Relay Review
 CLI 是底层能力，不要求用户记复杂参数。
 
 ```bash
-relay init      # 初始化项目
-relay start     # 开始任务，生成 EXECUTOR_TASK.md
-relay ask       # 卡住时生成 ASK_ADVISOR.md
-relay resume    # 顾问回复后生成继续执行提示
-relay review    # 完成后生成 REVIEW_REQUEST.md
-relay doctor    # 检查接入状态
+relay init          # 初始化项目（交互式选择 simple/openspec 模式）
+relay openspec      # 内置 OpenSpec CLI（new-change / status / list / instructions / archive）
+relay start         # 开始任务，生成 EXECUTOR_TASK.md
+relay ask           # 卡住时生成 ASK_ADVISOR.md
+relay resume        # 顾问回复后生成继续执行提示
+relay review        # 完成后生成 REVIEW_REQUEST.md
+relay doctor        # 检查接入状态
+relay sync          # 同步 Skills 和 OpenSpec 文件
 ```
 
 ### 4.4 Handoff 文件层
@@ -94,12 +96,13 @@ REVIEW_REQUEST.md
 REVIEW_REPORT.md
 ```
 
-### 4.5 OpenSpec 适配层
+### 4.5 OpenSpec 层（v0.3.0 起内置）
 
-- 没有 OpenSpec：simple 模式；
-- 检测到 OpenSpec：启用 openspec 模式；
-- 用户选择“引导初始化”：只提示和确认，不静默安装；
-- 不替代 `/opsx:apply`，只负责任务交接与求助。
+- relay-kit v0.3.0 起**内置 OpenSpec 实现**，零外部依赖；
+- `relay openspec` 子命令组提供完整 CLI：new-change / status / list / instructions / apply-instructions / archive / schemas；
+- `relay init --mode openspec` 自动创建 `openspec/` 目录结构；
+- 检测到外部 `openspec` CLI 时提供共存选项；
+- relay-kit 作为独立分叉维护，可按需合并上游优化或自主微调。
 
 ## 5. 最重要的边界
 
@@ -109,12 +112,11 @@ REVIEW_REPORT.md
 2. 不自动写业务代码；
 3. 不自动提交 git；
 4. 不替代 OpenCode / Claude Code；
-5. 不强制安装 OpenSpec；
-6. 不静默初始化 OpenSpec；
-7. MVP 不做 GUI；
-8. MVP 不做真正自动多 Agent 调度。
+5. 不强制安装外部 OpenSpec（已内置）；
+6. MVP 不做 GUI；
+7. MVP 不做真正自动多 Agent 调度。
 
-它做的是：初始化规则、生成任务交接材料、收集求助上下文、规范 Relay 输出、生成 Review 请求、让流程跨项目复用。
+它做的是：初始化规则、管理 OpenSpec change 生命周期、生成任务交接材料、收集求助上下文、规范 Relay 输出、生成 Review 请求、让流程跨项目复用。
 
 ## 6. Skills 安装策略
 

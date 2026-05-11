@@ -10,7 +10,9 @@
 2. 不污染用户所有项目；
 3. 不同项目可以有不同的 relay 工作流；
 4. 适合团队协作和作品集展示；
-5. 后续可通过 `relay sync --skills` 更新。
+5. 后续可通过 `relay sync` 更新。
+
+`relay init` 在 OpenSpec 模式下还会额外安装 **OpenSpec 命令/Skill 文件**（`.opencode/`、`.claude/commands/opsx/`、`.codex/skills/openspec-*/`），与 relay Skills 一起管理。
 
 ## 2. 不同工具的 Skills 目录
 
@@ -18,10 +20,19 @@
 
 ### Claude Code
 
-项目级：
+项目级 Skills：
 
 ```text
 .claude/skills/<skill-name>/SKILL.md
+```
+
+OpenSpec 命令：
+
+```text
+.claude/commands/opsx/propose.md
+.claude/commands/opsx/apply.md
+.claude/commands/opsx/archive.md
+.claude/commands/opsx/explore.md
 ```
 
 用户级：
@@ -32,16 +43,31 @@
 
 ### Codex
 
-项目级：
+项目级 Skills：
 
 ```text
 .agents/skills/<skill-name>/SKILL.md
+```
+
+OpenSpec Skills：
+
+```text
+.codex/skills/openspec-*/SKILL.md
 ```
 
 用户级：
 
 ```text
 ~/.agents/skills/<skill-name>/SKILL.md
+```
+
+### OpenCode
+
+项目级：
+
+```text
+.opencode/commands/opsx-*.md
+.opencode/skills/openspec-*/SKILL.md
 ```
 
 ## 3. relay-kit 管理副本
@@ -150,6 +176,22 @@ your-project/
 relay sync --skills
 ```
 
+### 同步 OpenSpec 文件
+
+```bash
+relay sync --openspec
+```
+
+同步 `.opencode/`、`.claude/commands/opsx/`、`.codex/skills/openspec-*/` 到项目。
+
+### 全量同步
+
+```bash
+relay sync --all
+```
+
+等于 `--skills` + `--openspec`。
+
 默认从：
 
 ```text
@@ -227,7 +269,7 @@ relay sync --skills --target all --scope user
 然后让每个成员本地运行：
 
 ```bash
-relay sync --skills
+relay sync --all
 ```
 
 ## 11. 最终规则

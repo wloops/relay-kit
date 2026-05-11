@@ -6,82 +6,63 @@
 relay init
 ```
 
-如果没有 OpenSpec，会让用户选择：
-
-```text
-1. Simple 模式：不使用 OpenSpec
-2. OpenSpec 模式：已有 OpenSpec，接入即可
-3. 引导初始化 OpenSpec：只提示/确认，不静默安装
-```
+无 `openspec/` 时弹出交互菜单选择模式。选择 OpenSpec 后自动创建目录结构并安装全套文件。
 
 初始化后生成：
 
-```text
-.relay/
-  config.json
-  state.json
-  skills/
-
-docs/
-  agent-handoffs/
-    runs/
-
-AGENTS.md
+```
+.relay/          # 配置 + 状态 + Skills
+. relayignore   # 上下文忽略规则
+.opencode/      # OpenCode 的 OpenSpec 命令/Skill
+.claude/        # Claude Code 的 OpenSpec 命令 + Skills
+.codex/         # Codex 的 OpenSpec Skills
+.agents/        # Codex 的 relay Skills
+openspec/       # OpenSpec 规范目录
+AGENTS.md       # relay-kit 执行规则注入
 ```
 
 ## 2. 规划功能
 
-对聪明模型说：
+对 Advisor（聪明模型）说：
 
-```text
+```
 用 relay-planner 帮我规划「本地项目存储」功能。
-请判断是否需要 OpenSpec，明确目标、范围、非目标，并拆成 tasks。
+判断是否需要 OpenSpec，明确目标、范围、非目标，并拆成 tasks。
 ```
 
-如果是中大型功能，建议输出：
-
-```text
-openspec/changes/add-local-project-storage/
-  proposal.md
-  design.md
-  tasks.md
-```
-
-## 3. 委派给小模型
-
-对聪明模型说：
-
-```text
-用 relay-delegator 把当前 OpenSpec change 的第 1-2 项交给 OpenCode。
-```
-
-Skill 底层调用或建议：
+得到 `PLAN_REPORT` 后，如果推荐 OpenSpec 模式：
 
 ```bash
-relay start
+relay openspec new-change add-local-storage
 ```
 
-生成：
+然后在 AI 工具中运行 `/opsx:propose add-local-storage` 生成完整制品。
 
-```text
-docs/agent-handoffs/runs/<run-id>/lanes/main/EXECUTOR_TASK.md
+## 3. 委派给 Executor
+
+```bash
+relay start --change add-local-storage --title "实现本地项目存储"
 ```
 
-把 `EXECUTOR_TASK.md` 交给 OpenCode。
+生成 `EXECUTOR_TASK.md`，交给 Executor：
 
-## 4. 小模型卡住
+```
+用 /relay:run 执行当前任务。
+```
+
+## 4. Executor 卡住
 
 ```bash
 relay ask
 ```
 
-生成 `ASK_ADVISOR.md`，交给聪明模型：
+生成 `ASK_ADVISOR.md`，交给 Advisor：
 
-```text
+```
 用 relay-escalation 分析这个 ASK_ADVISOR，输出 ADVISOR_DECISION。
 ```
 
-## 5. 顾问给出决策后继续
+## 5. Advisor 决策后继续
 
 保存顾问回复为 `ADVISOR_DECISION.md`，运行：
 
@@ -89,7 +70,7 @@ relay ask
 relay resume
 ```
 
-生成 `RESUME_PROMPT.md`，交给 OpenCode 继续。
+生成 `RESUME_PROMPT.md`，交给 Executor 继续。
 
 ## 6. 完成后 Review
 
@@ -97,20 +78,28 @@ relay resume
 relay review
 ```
 
-生成 `REVIEW_REQUEST.md`，交给聪明模型：
+生成 `REVIEW_REQUEST.md`，交给 Advisor：
 
-```text
-用 relay-reviewer review 当前实现。
-不要直接改代码，先输出 REVIEW_REPORT。
+```
+用 relay-reviewer review 当前实现。先输出 REVIEW_REPORT。
 ```
 
-## 7. 最简心智模型
+## 7. 更新 relay-kit
 
-```text
-planner：规划
-delegator：委派
-executor：执行
-escalation：卡住求助
-resume：继续执行
-reviewer：审查
+```bash
+npm update -g relay-kit
+cd your-project
+relay sync --all    # 全量更新 Skills + OpenSpec 文件
+```
+
+## 8. 最简心智模型
+
+```
+planner    → 规划
+delegator  → 委派成 EXECUTOR_TASK
+executor   → 小步执行，卡住求助
+escalation → Advisor 决策
+resume     → 拿决策继续
+reviewer   → 审查 + 裁决
+openspec   → 管理 change 生命周期
 ```

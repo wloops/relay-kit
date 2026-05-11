@@ -27,7 +27,8 @@
     ".opencode",
     ".claude",
     ".codex",
-    "README.md"
+    "README.md",
+    "README.en.md"
   ],
   "scripts": {
     "dev": "tsx src/cli.ts",
