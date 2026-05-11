@@ -21,8 +21,12 @@
     "docs/SMOKE_TESTS.md",
     "docs/USAGE_FLOW.md",
     "docs/V0_1_ALPHA_RELEASE.md",
+    "CHANGELOG.md",
     "skills",
     "templates",
+    ".opencode",
+    ".claude",
+    ".codex",
     "README.md"
   ],
   "scripts": {

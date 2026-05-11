@@ -1,6 +1,6 @@
 ---
 name: relay-runner
-description: 当用户运行 /relay:run 或需要执行任务时使用。自动检测读取 EXECUTOR_TASK.md 或 RESUME_PROMPT.md，以 Executor 角色执行实现。
+description: 当用户运行 /relay:run 或需要执行任务时使用。自动检测读取 EXECUTOR_TASK.md 或 RESUME_PROMPT.md，以 Executor 角色执行实现。支持任务进度追踪和自动重试。
 ---
 
 
@@ -22,11 +22,23 @@ description: 当用户运行 /relay:run 或需要执行任务时使用。自动�
 
 ## 核心规则
 
-1. 小步执行。
+1. 小步执行。每次只完成一个子任务。
 2. 不要超出当前任务范围。
 3. 未经批准不要引入新依赖。
 4. 除非明确要求，不要进行大规模重构。
 5. 有意义的变更后，报告变更文件和验证步骤。
+
+## 任务进度追踪
+
+- 将 EXECUTOR_TASK.md 中的任务拆分为微步骤。
+- 每完成一个微步骤，报告进度：`[N/M] <步骤描述> ✓`
+- 如果 EXECUTOR_TASK.md 包含 OpenSpec tasks.md 内容，按 tasks.md 的 `- [ ]` 清单逐项执行。
+- 每完成一个 task，将对应行标记为 `- [x]`。
+
+## 重试与升级规则
+
+- 首次失败：分析原因，尝试替代方案。
+- 同一问题尝试 2 次后仍失败：停止，创建 `ASK_ADVISOR.md`。
 
 ## 停止并生成 ASK_ADVISOR.md
 
@@ -50,3 +62,4 @@ description: 当用户运行 /relay:run 或需要执行任务时使用。自动�
 - 修改的文件列表
 - 每个文件的修改原因
 - 验证结果
+- 任务进度：`[M/M]` 或 `- [x]` 完成情况

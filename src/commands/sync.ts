@@ -1,9 +1,13 @@
 import type { Command } from "commander";
+import path from "node:path";
 import { loadConfig } from "../core/config.js";
+import { installOpenspecFiles } from "../core/skills.js";
 import { formatSkillSyncReport, SkillSyncConflictError, syncSkills, type SkillSyncScope, type SkillSyncTargetOption } from "../core/skills-sync.js";
 
 interface SyncOptions {
   skills?: boolean;
+  openspec?: boolean;
+  all?: boolean;
   target?: SkillSyncTargetOption;
   scope?: SkillSyncScope;
   dryRun?: boolean;
@@ -16,6 +20,8 @@ export function registerSyncCommand(program: Command): void {
     .command("sync")
     .description("Synchronize relay-kit managed resources.")
     .option("--skills", "Synchronize relay Skills from .relay/skills.")
+    .option("--openspec", "Synchronize OpenSpec command/skill files.")
+    .option("--all", "Synchronize everything (skills + OpenSpec files).")
     .option("--target <target>", "Skill target: claude, codex, or all.")
     .option("--scope <scope>", "Skill sync scope: project or user.", "project")
     .option("--dry-run", "Preview the sync plan without writing files.")
@@ -27,25 +33,41 @@ export function registerSyncCommand(program: Command): void {
 }
 
 export async function runSync(root: string, options: SyncOptions = {}): Promise<{ summary: string }> {
-  if (!options.skills) {
-    throw new Error("relay sync currently supports only --skills.");
+  const runSkills = options.all || options.skills;
+  const runOpenspec = options.all || options.openspec;
+
+  if (!runSkills && !runOpenspec) {
+    throw new Error("Specify --skills, --openspec, or --all.");
   }
 
-  validateTarget(options.target);
-  validateScope(options.scope);
+  const lines: string[] = [];
 
-  const config = await loadConfig(root);
+  if (runSkills) {
+    validateTarget(options.target);
+    validateScope(options.scope);
 
-  try {
-    const report = await syncSkills(root, config, options);
-    return { summary: formatSkillSyncReport(report) };
-  } catch (error) {
-    if (error instanceof SkillSyncConflictError) {
-      throw new Error(`${formatSkillSyncReport(error.report)}\n${error.message}`);
+    const config = await loadConfig(root);
+
+    try {
+      const report = await syncSkills(root, config, options);
+      lines.push(formatSkillSyncReport(report));
+    } catch (error) {
+      if (error instanceof SkillSyncConflictError) {
+        throw new Error(`${formatSkillSyncReport(error.report)}\n${error.message}`);
+      }
+      throw error;
     }
-
-    throw error;
   }
+
+  if (runOpenspec) {
+    const installed = await installOpenspecFiles(root, { force: options.force });
+    lines.push(`relay sync --openspec: installed ${installed.length} directories.`);
+    for (const dir of installed) {
+      lines.push(`  ${path.relative(root, dir)}`);
+    }
+  }
+
+  return { summary: lines.join("\n") };
 }
 
 function validateTarget(target: string | undefined): asserts target is SkillSyncTargetOption | undefined {

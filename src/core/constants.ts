@@ -9,6 +9,13 @@ export const DEFAULT_MAX_LOG_LINES = 160;
 export const AGENTS_START_MARKER = "<!-- relay-kit:start -->";
 export const AGENTS_END_MARKER = "<!-- relay-kit:end -->";
 
+export const OPENSPEC_DIR = "openspec";
+export const OPENSPEC_CHANGES_DIR = `${OPENSPEC_DIR}/changes`;
+export const OPENSPEC_SPECS_DIR = `${OPENSPEC_DIR}/specs`;
+export const OPENSPEC_ARCHIVE_DIR = `${OPENSPEC_DIR}/changes/archive`;
+export const OPENSPEC_CONFIG_FILE = ".openspec.yaml";
+export const OPENSPEC_DEFAULT_SCHEMA = "spec-driven";
+
 export const DEFAULT_SKILLS = [
   "relay-planner",
   "relay-delegator",

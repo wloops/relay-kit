@@ -131,7 +131,7 @@ test("sync validates supported flags and source availability", async () => {
   await runInit(root, { mode: "simple" });
   await assert.rejects(() => runSync(root, { skills: true, target: "other" as never }), /--target must be/);
   await assert.rejects(() => runSync(root, { skills: true, scope: "global" as never }), /--scope must be/);
-  await assert.rejects(() => runSync(root), /currently supports only --skills/);
+  await assert.rejects(() => runSync(root), /Specify --skills, --openspec, or --all/);
 
   await fs.rm(path.join(root, ".relay", "skills"), { recursive: true, force: true });
   await assert.rejects(() => runSync(root, { skills: true }), /Run relay init first/);

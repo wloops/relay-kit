@@ -179,13 +179,16 @@ test("openspec mode reads the selected change into executor handoff", async () =
 test("with-openspec guidance does not create openspec directory silently", async () => {
   const root = await tempProject();
   const result = await runInit(root, { withOpenspec: true });
-  assert.match(result.summary, /did not create openspec/);
+  assert.match(result.summary, /OpenSpec was requested but not selected/);
   assert.equal(await exists(path.join(root, "openspec")), false);
 });
 
-test("init rejects openspec mode when openspec structure is missing", async () => {
+test("init creates openspec structure with --mode openspec even without prior structure", async () => {
   const root = await tempProject();
-  await assert.rejects(() => runInit(root, { mode: "openspec" }), /openspec\/ was not detected/);
+  await runInit(root, { mode: "openspec" });
+  assert.equal(await exists(path.join(root, "openspec")), true);
+  assert.equal(await exists(path.join(root, "openspec", "changes")), true);
+  assert.equal(await exists(path.join(root, "openspec", "specs")), true);
 });
 
 test("ask, resume and review reject when there is no current run", async () => {

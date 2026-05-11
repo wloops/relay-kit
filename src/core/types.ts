@@ -77,3 +77,86 @@ export interface RunContext {
   runDir: string;
   laneDir: string;
 }
+
+export interface OpenSpecChangeConfig {
+  schema: string;
+  created: string;
+}
+
+export interface SchemaArtifact {
+  id: string;
+  generates: string;
+  description: string;
+  template: string;
+  instruction: string;
+  requires: string[];
+}
+
+export interface SchemaApply {
+  requires: string[];
+  tracks: string;
+  instruction: string;
+}
+
+export interface SchemaDefinition {
+  name: string;
+  version: number;
+  description: string;
+  artifacts: SchemaArtifact[];
+  apply: SchemaApply;
+}
+
+export interface ArtifactStatus {
+  id: string;
+  status: "done" | "ready" | "blocked";
+}
+
+export interface OpenSpecStatusResult {
+  changeName: string;
+  schemaName: string;
+  applyRequires: string[];
+  artifacts: ArtifactStatus[];
+}
+
+export interface InstructionsResult {
+  artifactId: string;
+  context: string;
+  rules: string;
+  template: string;
+  instruction: string;
+  outputPath: string;
+  dependencies: string[];
+}
+
+export interface TaskInfo {
+  index: string;
+  description: string;
+  completed: boolean;
+}
+
+export interface ApplyInstructionsResult {
+  schemaName: string;
+  changeName: string;
+  state: "ready" | "blocked" | "all_done";
+  contextFiles: Record<string, string[]>;
+  total: number;
+  complete: number;
+  remaining: number;
+  tasks: TaskInfo[];
+  instruction: string;
+}
+
+export interface OpenSpecListEntry {
+  name: string;
+  schema: string;
+  created: string;
+}
+
+export type OpenSpecSyncMode = "use_relay" | "use_external" | "skip";
+
+export interface OpenSpecContext {
+  change: string;
+  proposal: string;
+  design: string;
+  tasks: string;
+}

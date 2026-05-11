@@ -2,6 +2,7 @@ import { Command } from "commander";
 import { registerAskCommand } from "./commands/ask.js";
 import { registerDoctorCommand } from "./commands/doctor.js";
 import { registerInitCommand } from "./commands/init.js";
+import { registerOpenspecCommand } from "./commands/openspec.js";
 import { registerResumeCommand } from "./commands/resume.js";
 import { registerReviewCommand } from "./commands/review.js";
 import { registerStartCommand } from "./commands/start.js";
@@ -15,6 +16,7 @@ program
   .version("0.2.0");
 
 registerInitCommand(program);
+registerOpenspecCommand(program);
 registerStartCommand(program);
 registerAskCommand(program);
 registerResumeCommand(program);
