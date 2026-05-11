@@ -58,12 +58,15 @@ export async function runInit(root: string, options: InitOptions = {}): Promise<
   const openspecInitNotes: string[] = [];
 
   if (mode === "openspec") {
-    if (!project.hasOpenSpec) {
+    const isExisting = project.hasOpenSpec;
+    if (!isExisting) {
       await initOpenSpecStructure(root);
       openspecInitNotes.push(`Created ${OPENSPEC_DIR}/ structure (changes/, specs/, archive/).`);
+    } else {
+      openspecInitNotes.push(`Detected existing ${OPENSPEC_DIR}/ structure. Updating OpenSpec files.`);
     }
     await detectAndHandleExternalOpenspec(root, options, openspecInitNotes);
-    const openspecTargets = await installOpenspecFiles(root, { force: options.force });
+    const openspecTargets = await installOpenspecFiles(root, { force: isExisting || options.force });
     openspecInitNotes.push(`OpenSpec files installed to: ${openspecTargets.map((t) => path.relative(root, t)).join(", ")}`);
   }
 

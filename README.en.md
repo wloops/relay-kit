@@ -225,6 +225,23 @@ It's a guard layer against common leaks, not a full security scanner.
 
 ---
 
+## Migrating from External OpenSpec
+
+If your project was previously initialized with the external `openspec` CLI (`@fission-ai/openspec`):
+
+```bash
+relay init --mode openspec --force    # Replace with relay-kit built-in
+relay sync --all                      # Update all Skills and OpenSpec files
+```
+
+relay-kit's OpenSpec implementation is fully format-compatible. Your existing `proposal.md`, `design.md`, `tasks.md`, and delta specs require no changes. Only the command/skill files in `.opencode/`, `.claude/commands/opsx/`, and `.codex/skills/openspec-*/` will be updated to call the built-in `relay openspec`.
+
+## Credits
+
+OpenSpec specification originated from [Fission-AI/OpenSpec](https://github.com/Fission-AI/OpenSpec). relay-kit bundles an independent implementation that maintains format compatibility.
+
+---
+
 ## License
 
 [MIT](LICENSE)

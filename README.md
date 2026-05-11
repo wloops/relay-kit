@@ -226,6 +226,23 @@ your-project/
 
 ---
 
+## 从已有 OpenSpec 项目迁移
+
+如果项目已经通过外部 `openspec` CLI（`@fission-ai/openspec`）初始化过：
+
+```bash
+relay init --mode openspec --force    # 覆盖为 relay-kit 内置实现
+relay sync --all                      # 更新全部 Skills 和 OpenSpec 文件
+```
+
+relay-kit 的 OpenSpec 实现完全兼容已有文件格式，`proposal.md` / `design.md` / `tasks.md` / delta spec 等无需任何修改。只有 `.opencode/`、`.claude/commands/opsx/`、`.codex/skills/openspec-*/` 中的命令/Skill 文件会被更新为调用内置 `relay openspec`。
+
+## 致谢
+
+OpenSpec 规范源自 [Fission-AI/OpenSpec](https://github.com/Fission-AI/OpenSpec)。relay-kit 内置了独立实现的 OpenSpec CLI，保持格式兼容。
+
+---
+
 ## 许可
 
 [MIT](LICENSE)
