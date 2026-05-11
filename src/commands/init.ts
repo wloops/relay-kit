@@ -126,13 +126,13 @@ async function promptModeSelection(): Promise<RelayMode> {
     new Promise((resolve) => rl.question(q, resolve));
 
   console.log();
-  console.log("Select initialization mode:");
-  console.log("  1. Simple mode  — relay-kit standalone (no OpenSpec)");
-  console.log("  2. OpenSpec mode — integrated with OpenSpec for spec-driven development (recommended)");
+  console.log("选择初始化模式：");
+  console.log("  1. 简单模式  — relay-kit 独立使用（不含 OpenSpec）");
+  console.log("  2. OpenSpec 模式 — 集成 OpenSpec，规范驱动开发（推荐）");
 
   let answer: string;
   try {
-    answer = await question("Choose mode (1/2, default 2): ");
+    answer = await question("请选择 (1/2, 默认 2): ");
   } finally {
     rl.close();
   }
@@ -153,7 +153,7 @@ async function detectAndHandleExternalOpenspec(
   const externalCliPath = await findExternalOpenspecCli();
 
   if (!externalCliPath) {
-    notes.push("No external openspec CLI detected. Using relay-kit built-in implementation.");
+    notes.push("未检测到外部 openspec CLI。使用 relay-kit 内置实现。");
     return;
   }
 
@@ -161,9 +161,9 @@ async function detectAndHandleExternalOpenspec(
 
   if (syncMode) {
     if (syncMode === "use_relay") {
-      notes.push("External openspec CLI found but relay-kit built-in will be used.");
+      notes.push("发现外部 openspec CLI，已选择使用 relay-kit 内置实现。");
     } else if (syncMode === "use_external") {
-      notes.push("Using external openspec CLI. Upgrade relay-kit to switch to built-in.");
+      notes.push("使用外部 openspec CLI。可通过 relay init --openspec-sync use_relay 切换。");
     }
     return;
   }
@@ -184,15 +184,15 @@ async function detectAndHandleExternalOpenspec(
     new Promise((resolve) => rl.question(q, resolve));
 
   console.log();
-  console.log(`External openspec CLI detected at: ${externalCliPath}`);
-  console.log("relay-kit now has built-in OpenSpec support.");
-  console.log("  1. Use relay-kit built-in (recommended) — no external dependency needed");
-  console.log("  2. Use external openspec CLI — keep existing setup");
-  console.log("  3. Skip — don't set up OpenSpec");
+  console.log(`检测到外部 openspec CLI: ${externalCliPath}`);
+  console.log("relay-kit 现已内置 OpenSpec 实现。");
+  console.log("  1. 使用 relay-kit 内置（推荐）— 无需外部依赖");
+  console.log("  2. 使用外部 openspec CLI — 保持现有设置");
+  console.log("  3. 跳过 — 不设置 OpenSpec");
 
   let answer: string;
   try {
-    answer = await question("Choose option (1/2/3, default 1): ");
+    answer = await question("请选择 (1/2/3, 默认 1): ");
   } finally {
     rl.close();
   }
